@@ -1,0 +1,22 @@
+{
+  "model": "yolo26l_6",
+  "task": "detect",
+  "imgsz": 640,
+  "nc": 80,
+  "strides": [
+    8,
+    16,
+    32
+  ],
+  "outputs": [
+    "box_p3",
+    "box_p4",
+    "box_p5",
+    "cls_p3",
+    "cls_p4",
+    "cls_p5"
+  ],
+  "optimize": "VIP9000NANODI_PLUS_PID0X1000003B",
+  "platform": "a733",
+  "quant": "pcq"
+}

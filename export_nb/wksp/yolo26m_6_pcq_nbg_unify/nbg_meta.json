@@ -1,0 +1,133 @@
+{
+    "Inputs": {
+        "images_391": {
+            "name": "images",
+            "shape": [
+                1,
+                3,
+                640,
+                640
+            ],
+            "format": "nchw",
+            "quantizer": "asymmetric_affine",
+            "quantize": {
+                "qtype": "i8",
+                "max_value": 1.0,
+                "min_value": 0.0,
+                "scale": 0.003921568859368563,
+                "zero_point": -128
+            }
+        }
+    },
+    "Outputs": {
+        "attach_box_p3/out0_0": {
+            "name": "attach_box_p3/out0",
+            "shape": [
+                1,
+                4,
+                80,
+                80
+            ],
+            "format": "nchw",
+            "quantizer": "asymmetric_affine",
+            "quantize": {
+                "qtype": "i8",
+                "max_value": 11.919032096862793,
+                "min_value": -0.5210169553756714,
+                "scale": 0.04878450557589531,
+                "zero_point": -117
+            }
+        },
+        "attach_box_p4/out0_1": {
+            "name": "attach_box_p4/out0",
+            "shape": [
+                1,
+                4,
+                40,
+                40
+            ],
+            "format": "nchw",
+            "quantizer": "asymmetric_affine",
+            "quantize": {
+                "qtype": "i8",
+                "max_value": 19.58245849609375,
+                "min_value": -0.202414870262146,
+                "scale": 0.07758773863315582,
+                "zero_point": -125
+            }
+        },
+        "attach_box_p5/out0_2": {
+            "name": "attach_box_p5/out0",
+            "shape": [
+                1,
+                4,
+                20,
+                20
+            ],
+            "format": "nchw",
+            "quantizer": "asymmetric_affine",
+            "quantize": {
+                "qtype": "i8",
+                "max_value": 14.459635734558105,
+                "min_value": 0.0,
+                "scale": 0.056704454123973846,
+                "zero_point": -128
+            }
+        },
+        "attach_cls_p3/out0_3": {
+            "name": "attach_cls_p3/out0",
+            "shape": [
+                1,
+                80,
+                80,
+                80
+            ],
+            "format": "nchw",
+            "quantizer": "asymmetric_affine",
+            "quantize": {
+                "qtype": "i8",
+                "max_value": 0.0,
+                "min_value": -28.289203643798828,
+                "scale": 0.11093804985284805,
+                "zero_point": 127
+            }
+        },
+        "attach_cls_p4/out0_4": {
+            "name": "attach_cls_p4/out0",
+            "shape": [
+                1,
+                80,
+                40,
+                40
+            ],
+            "format": "nchw",
+            "quantizer": "asymmetric_affine",
+            "quantize": {
+                "qtype": "i8",
+                "max_value": 1.671365737915039,
+                "min_value": -32.853450775146484,
+                "scale": 0.1353914439678192,
+                "zero_point": 115
+            }
+        },
+        "attach_cls_p5/out0_5": {
+            "name": "attach_cls_p5/out0",
+            "shape": [
+                1,
+                80,
+                20,
+                20
+            ],
+            "format": "nchw",
+            "quantizer": "asymmetric_affine",
+            "quantize": {
+                "qtype": "i8",
+                "max_value": 2.7111568450927734,
+                "min_value": -47.678104400634766,
+                "scale": 0.1976049393415451,
+                "zero_point": 113
+            }
+        }
+    },
+    "Recurrent_connections": {}
+}

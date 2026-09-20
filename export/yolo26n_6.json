@@ -1,0 +1,6388 @@
+{
+    "MetaData": {
+        "Name": "main_graph",
+        "AcuityVersion": "6",
+        "Platform": "tensorflow",
+        "Org_Platform": "onnx"
+    },
+    "Layers": {
+        "attach_box_p3/out0_0": {
+            "name": "attach_box_p3/out0",
+            "op": "output",
+            "parameters": {},
+            "inputs": [
+                "@attach_box_p3/out0_0_acuity_mark_perm_363:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "attach_box_p4/out0_1": {
+            "name": "attach_box_p4/out0",
+            "op": "output",
+            "parameters": {},
+            "inputs": [
+                "@attach_box_p4/out0_1_acuity_mark_perm_362:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "attach_box_p5/out0_2": {
+            "name": "attach_box_p5/out0",
+            "op": "output",
+            "parameters": {},
+            "inputs": [
+                "@attach_box_p5/out0_2_acuity_mark_perm_361:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "attach_cls_p3/out0_3": {
+            "name": "attach_cls_p3/out0",
+            "op": "output",
+            "parameters": {},
+            "inputs": [
+                "@attach_cls_p3/out0_3_acuity_mark_perm_360:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "attach_cls_p4/out0_4": {
+            "name": "attach_cls_p4/out0",
+            "op": "output",
+            "parameters": {},
+            "inputs": [
+                "@attach_cls_p4/out0_4_acuity_mark_perm_359:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "attach_cls_p5/out0_5": {
+            "name": "attach_cls_p5/out0",
+            "op": "output",
+            "parameters": {},
+            "inputs": [
+                "@attach_cls_p5/out0_5_acuity_mark_perm_358:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cls_p5_6": {
+            "name": "cls_p5",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 80,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@cv3.2/cv3.2.1/cv3.2.1.1/act/Sigmoid_output_0_19_cv3.2/cv3.2.1/cv3.2.1.1/act/Mul_output_0_12:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cls_p4_7": {
+            "name": "cls_p4",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 80,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@cv3.1/cv3.1.1/cv3.1.1.1/act/Sigmoid_output_0_21_cv3.1/cv3.1.1/cv3.1.1.1/act/Mul_output_0_13:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cls_p3_8": {
+            "name": "cls_p3",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 80,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@cv3.0/cv3.0.1/cv3.0.1.1/act/Sigmoid_output_0_23_cv3.0/cv3.0.1/cv3.0.1.1/act/Mul_output_0_14:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "box_p5_9": {
+            "name": "box_p5",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 4,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@cv2.2/cv2.2.1/act/Sigmoid_output_0_25_cv2.2/cv2.2.1/act/Mul_output_0_15:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "box_p4_10": {
+            "name": "box_p4",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 4,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@cv2.1/cv2.1.1/act/Sigmoid_output_0_27_cv2.1/cv2.1.1/act/Mul_output_0_16:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "box_p3_11": {
+            "name": "box_p3",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 4,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@cv2.0/cv2.0.1/act/Sigmoid_output_0_29_cv2.0/cv2.0.1/act/Mul_output_0_17:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.2/cv3.2.1/cv3.2.1.1/conv/Conv_output_0_18": {
+            "name": "cv3.2/cv3.2.1/cv3.2.1.1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 80,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@cv3.2/cv3.2.1/cv3.2.1.0/act/Sigmoid_output_0_31_cv3.2/cv3.2.1/cv3.2.1.0/act/Mul_output_0_30:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.1/cv3.1.1/cv3.1.1.1/conv/Conv_output_0_20": {
+            "name": "cv3.1/cv3.1.1/cv3.1.1.1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 80,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@cv3.1/cv3.1.1/cv3.1.1.0/act/Sigmoid_output_0_33_cv3.1/cv3.1.1/cv3.1.1.0/act/Mul_output_0_32:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.0/cv3.0.1/cv3.0.1.1/conv/Conv_output_0_22": {
+            "name": "cv3.0/cv3.0.1/cv3.0.1.1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 80,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@cv3.0/cv3.0.1/cv3.0.1.0/act/Sigmoid_output_0_35_cv3.0/cv3.0.1/cv3.0.1.0/act/Mul_output_0_34:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv2.2/cv2.2.1/conv/Conv_output_0_24": {
+            "name": "cv2.2/cv2.2.1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@cv2.2/cv2.2.0/act/Sigmoid_output_0_37_cv2.2/cv2.2.0/act/Mul_output_0_36:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv2.1/cv2.1.1/conv/Conv_output_0_26": {
+            "name": "cv2.1/cv2.1.1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@cv2.1/cv2.1.0/act/Sigmoid_output_0_39_cv2.1/cv2.1.0/act/Mul_output_0_38:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv2.0/cv2.0.1/conv/Conv_output_0_28": {
+            "name": "cv2.0/cv2.0.1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@cv2.0/cv2.0.0/act/Sigmoid_output_0_41_cv2.0/cv2.0.0/act/Mul_output_0_40:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.2/cv3.2.1/cv3.2.1.0/conv/Conv_output_0_42": {
+            "name": "cv3.2/cv3.2.1/cv3.2.1.0/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 80,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 80,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@cv3.2/cv3.2.0/cv3.2.0.1/act/Sigmoid_output_0_55_cv3.2/cv3.2.0/cv3.2.0.1/act/Mul_output_0_43:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.1/cv3.1.1/cv3.1.1.0/conv/Conv_output_0_44": {
+            "name": "cv3.1/cv3.1.1/cv3.1.1.0/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 80,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 80,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@cv3.1/cv3.1.0/cv3.1.0.1/act/Sigmoid_output_0_57_cv3.1/cv3.1.0/cv3.1.0.1/act/Mul_output_0_45:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.0/cv3.0.1/cv3.0.1.0/conv/Conv_output_0_46": {
+            "name": "cv3.0/cv3.0.1/cv3.0.1.0/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 80,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 80,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@cv3.0/cv3.0.0/cv3.0.0.1/act/Sigmoid_output_0_59_cv3.0/cv3.0.0/cv3.0.0.1/act/Mul_output_0_47:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv2.2/cv2.2.0/conv/Conv_output_0_48": {
+            "name": "cv2.2/cv2.2.0/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.22/cv2/act/Sigmoid_output_0_61_layers.22/cv2/act/Mul_output_0_49:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv2.1/cv2.1.0/conv/Conv_output_0_50": {
+            "name": "cv2.1/cv2.1.0/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.19/cv2/act/Sigmoid_output_0_63_layers.19/cv2/act/Mul_output_0_51:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv2.0/cv2.0.0/conv/Conv_output_0_52": {
+            "name": "cv2.0/cv2.0.0/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.16/cv2/act/Sigmoid_output_0_65_layers.16/cv2/act/Mul_output_0_53:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.2/cv3.2.0/cv3.2.0.1/conv/Conv_output_0_54": {
+            "name": "cv3.2/cv3.2.0/cv3.2.0.1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 80,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@cv3.2/cv3.2.0/cv3.2.0.0/act/Sigmoid_output_0_67_cv3.2/cv3.2.0/cv3.2.0.0/act/Mul_output_0_66:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.1/cv3.1.0/cv3.1.0.1/conv/Conv_output_0_56": {
+            "name": "cv3.1/cv3.1.0/cv3.1.0.1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 80,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@cv3.1/cv3.1.0/cv3.1.0.0/act/Sigmoid_output_0_69_cv3.1/cv3.1.0/cv3.1.0.0/act/Mul_output_0_68:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.0/cv3.0.0/cv3.0.0.1/conv/Conv_output_0_58": {
+            "name": "cv3.0/cv3.0.0/cv3.0.0.1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 80,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@cv3.0/cv3.0.0/cv3.0.0.0/act/Sigmoid_output_0_71_cv3.0/cv3.0.0/cv3.0.0.0/act/Mul_output_0_70:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/cv2/conv/Conv_output_0_60": {
+            "name": "layers.22/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 256,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.22/Concat_output_0_72:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/cv2/conv/Conv_output_0_62": {
+            "name": "layers.19/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.19/Concat_output_0_74:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/cv2/conv/Conv_output_0_64": {
+            "name": "layers.16/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.16/Concat_output_0_76:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/Concat_output_0_72": {
+            "name": "layers.22/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.22/Slice_output_0_146:out0",
+                "@layers.22/Slice_output_0_146:out1",
+                "@layers.22/m.0/m.0.1/Add_1_output_0_73:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/Add_1_output_0_73": {
+            "name": "layers.22/m.0/m.0.1/Add_1_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.22/m.0/m.0.1/Add_output_0_84:out0",
+                "@layers.22/m.0/m.0.1/ffn/ffn.1/conv/Conv_output_0_85:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/Concat_output_0_74": {
+            "name": "layers.19/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.19/Slice_output_0_148:out0",
+                "@layers.19/Slice_output_0_148:out1",
+                "@layers.19/m.0/cv3/act/Sigmoid_output_0_87_layers.19/m.0/cv3/act/Mul_output_0_75:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/Concat_output_0_76": {
+            "name": "layers.16/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.16/Slice_output_0_139:out0",
+                "@layers.16/Slice_output_0_139:out1",
+                "@layers.16/m.0/cv3/act/Sigmoid_output_0_79_layers.16/m.0/cv3/act/Mul_output_0_77:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.2/cv3.2.0/cv3.2.0.0/conv/Conv_output_0_78": {
+            "name": "cv3.2/cv3.2.0/cv3.2.0.0/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 256,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 256,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.22/cv2/act/Sigmoid_output_0_61_layers.22/cv2/act/Mul_output_0_49:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.1/cv3.1.0/cv3.1.0.0/conv/Conv_output_0_80": {
+            "name": "cv3.1/cv3.1.0/cv3.1.0.0/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 128,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.19/cv2/act/Sigmoid_output_0_63_layers.19/cv2/act/Mul_output_0_51:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/cv3/conv/Conv_output_0_81": {
+            "name": "layers.16/m.0/cv3/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.16/m.0/Concat_output_0_83:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.0/cv3.0.0/cv3.0.0.0/conv/Conv_output_0_82": {
+            "name": "cv3.0/cv3.0.0/cv3.0.0.0/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 64,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.16/cv2/act/Sigmoid_output_0_65_layers.16/cv2/act/Mul_output_0_53:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/Concat_output_0_83": {
+            "name": "layers.16/m.0/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.16/m.0/m/m.1/Add_output_0_89:out0",
+                "@layers.16/m.0/cv2/act/Sigmoid_output_0_99_layers.16/m.0/cv2/act/Mul_output_0_90:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/Add_output_0_84": {
+            "name": "layers.22/m.0/m.0.1/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.22/m.0/m.0.0/Add_output_0_91:out0",
+                "@layers.22/m.0/m.0.1/attn/proj/conv/Conv_output_0_92:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/ffn/ffn.1/conv/Conv_output_0_85": {
+            "name": "layers.22/m.0/m.0.1/ffn/ffn.1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/ffn/ffn.0/act/Sigmoid_output_0_103_layers.22/m.0/m.0.1/ffn/ffn.0/act/Mul_output_0_93:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/cv3/conv/Conv_output_0_86": {
+            "name": "layers.19/m.0/cv3/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.19/m.0/Concat_output_0_88:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/Concat_output_0_88": {
+            "name": "layers.19/m.0/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.19/m.0/m/m.1/Add_output_0_94:out0",
+                "@layers.19/m.0/cv2/act/Sigmoid_output_0_107_layers.19/m.0/cv2/act/Mul_output_0_95:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/m/m.1/Add_output_0_89": {
+            "name": "layers.16/m.0/m/m.1/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.16/m.0/m/m.0/Add_output_0_96:out0",
+                "@layers.16/m.0/m/m.1/cv2/act/Sigmoid_output_0_111_layers.16/m.0/m/m.1/cv2/act/Mul_output_0_97:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.0/Add_output_0_91": {
+            "name": "layers.22/m.0/m.0.0/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.22/Slice_output_0_146:out1",
+                "@layers.22/m.0/m.0.0/cv2/act/Sigmoid_output_0_114_layers.22/m.0/m.0.0/cv2/act/Mul_output_0_100:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/proj/conv/Conv_output_0_92": {
+            "name": "layers.22/m.0/m.0.1/attn/proj/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/Add_output_0_101:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/m/m.1/Add_output_0_94": {
+            "name": "layers.19/m.0/m/m.1/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.19/m.0/m/m.0/Add_output_0_104:out0",
+                "@layers.19/m.0/m/m.1/cv2/act/Sigmoid_output_0_122_layers.19/m.0/m/m.1/cv2/act/Mul_output_0_105:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/m/m.0/Add_output_0_96": {
+            "name": "layers.16/m.0/m/m.0/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.16/m.0/cv1/act/Sigmoid_output_0_125_layers.16/m.0/cv1/act/Mul_output_0_108:out0",
+                "@layers.16/m.0/m/m.0/cv2/act/Sigmoid_output_0_127_layers.16/m.0/m/m.0/cv2/act/Mul_output_0_109:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/cv2/conv/Conv_output_0_98": {
+            "name": "layers.16/m.0/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.16/Slice_output_0_139:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/Add_output_0_101": {
+            "name": "layers.22/m.0/m.0.1/attn/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/Add_output_0_101_acuity_mark_perm_364:out0",
+                "@layers.22/m.0/m.0.1/attn/pe/conv/Conv_output_0_116:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/ffn/ffn.0/conv/Conv_output_0_102": {
+            "name": "layers.22/m.0/m.0.1/ffn/ffn.0/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 256,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/Add_output_0_84:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/m/m.0/Add_output_0_104": {
+            "name": "layers.19/m.0/m/m.0/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.19/m.0/cv1/act/Sigmoid_output_0_134_layers.19/m.0/cv1/act/Mul_output_0_119:out0",
+                "@layers.19/m.0/m/m.0/cv2/act/Sigmoid_output_0_136_layers.19/m.0/m/m.0/cv2/act/Mul_output_0_120:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/cv2/conv/Conv_output_0_106": {
+            "name": "layers.19/m.0/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.19/Slice_output_0_148:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/m/m.1/cv2/conv/Conv_output_0_110": {
+            "name": "layers.16/m.0/m/m.1/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.16/m.0/m/m.1/cv1/act/Sigmoid_output_0_129_layers.16/m.0/m/m.1/cv1/act/Mul_output_0_112:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.0/cv2/conv/Conv_output_0_113": {
+            "name": "layers.22/m.0/m.0.0/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.0/cv1/act/Sigmoid_output_0_131_layers.22/m.0/m.0.0/cv1/act/Mul_output_0_130:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/Reshape_1_output_0_115": {
+            "name": "layers.22/m.0/m.0.1/attn/Reshape_1_output_0",
+            "op": "reshape",
+            "parameters": {
+                "shape": [
+                    1,
+                    128,
+                    20,
+                    20
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/MatMul_1_output_0_118:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/pe/conv/Conv_output_0_116": {
+            "name": "layers.22/m.0/m.0.1/attn/pe/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 128,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/pe/conv/Conv_output_0_116_acuity_mark_perm_365:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/Reshape_2_output_0_117": {
+            "name": "layers.22/m.0/m.0.1/attn/Reshape_2_output_0",
+            "op": "reshape",
+            "parameters": {
+                "shape": [
+                    1,
+                    128,
+                    20,
+                    20
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/Split_output_0_182:out2"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/MatMul_1_output_0_118": {
+            "name": "layers.22/m.0/m.0.1/attn/MatMul_1_output_0",
+            "op": "matmul",
+            "parameters": {
+                "transpose_a": false,
+                "transpose_b": false
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/Split_output_0_182:out2",
+                "@layers.22/m.0/m.0.1/attn/Transpose_1_output_0_132:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/m/m.1/cv2/conv/Conv_output_0_121": {
+            "name": "layers.19/m.0/m/m.1/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.19/m.0/m/m.1/cv1/act/Sigmoid_output_0_138_layers.19/m.0/m/m.1/cv1/act/Mul_output_0_123:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/cv1/conv/Conv_output_0_124": {
+            "name": "layers.16/m.0/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.16/Slice_output_0_139:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/m/m.0/cv2/conv/Conv_output_0_126": {
+            "name": "layers.16/m.0/m/m.0/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.16/m.0/m/m.0/cv1/act/Sigmoid_output_0_142_layers.16/m.0/m/m.0/cv1/act/Mul_output_0_141:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/m/m.1/cv1/conv/Conv_output_0_128": {
+            "name": "layers.16/m.0/m/m.1/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.16/m.0/m/m.0/Add_output_0_96:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/Transpose_1_output_0_132": {
+            "name": "layers.22/m.0/m.0.1/attn/Transpose_1_output_0",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    1,
+                    3,
+                    2
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/Softmax_output_0_147:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/cv1/conv/Conv_output_0_133": {
+            "name": "layers.19/m.0/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.19/Slice_output_0_148:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/m/m.0/cv2/conv/Conv_output_0_135": {
+            "name": "layers.19/m.0/m/m.0/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.19/m.0/m/m.0/cv1/act/Sigmoid_output_0_151_layers.19/m.0/m/m.0/cv1/act/Mul_output_0_150:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/m/m.1/cv1/conv/Conv_output_0_137": {
+            "name": "layers.19/m.0/m/m.1/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.19/m.0/m/m.0/Add_output_0_104:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/Slice_output_0_139": {
+            "name": "layers.16/Slice_output_0",
+            "op": "split",
+            "parameters": {
+                "dim": 3,
+                "slices": [
+                    32
+                ],
+                "unstack": false
+            },
+            "inputs": [
+                "@layers.16/cv1/act/Sigmoid_output_0_144_layers.16/cv1/act/Mul_output_0_140:out0"
+            ],
+            "outputs": [
+                "out0",
+                "out1"
+            ]
+        },
+        "layers.16/m.0/m/m.0/cv1/conv/Conv_output_0_143": {
+            "name": "layers.16/m.0/m/m.0/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.16/m.0/cv1/act/Sigmoid_output_0_125_layers.16/m.0/cv1/act/Mul_output_0_108:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.0/cv1/conv/Conv_output_0_145": {
+            "name": "layers.22/m.0/m.0.0/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.22/Slice_output_0_146:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/Slice_output_0_146": {
+            "name": "layers.22/Slice_output_0",
+            "op": "split",
+            "parameters": {
+                "dim": 3,
+                "slices": [
+                    128
+                ],
+                "unstack": false
+            },
+            "inputs": [
+                "@layers.22/cv1/act/Sigmoid_output_0_163_layers.22/cv1/act/Mul_output_0_156:out0"
+            ],
+            "outputs": [
+                "out0",
+                "out1"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/Softmax_output_0_147": {
+            "name": "layers.22/m.0/m.0.1/attn/Softmax_output_0",
+            "op": "softmax",
+            "parameters": {
+                "sf_axis": -1,
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/MatMul_output_0_157:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/Slice_output_0_148": {
+            "name": "layers.19/Slice_output_0",
+            "op": "split",
+            "parameters": {
+                "dim": 3,
+                "slices": [
+                    64
+                ],
+                "unstack": false
+            },
+            "inputs": [
+                "@layers.19/cv1/act/Sigmoid_output_0_153_layers.19/cv1/act/Mul_output_0_149:out0"
+            ],
+            "outputs": [
+                "out0",
+                "out1"
+            ]
+        },
+        "layers.19/m.0/m/m.0/cv1/conv/Conv_output_0_152": {
+            "name": "layers.19/m.0/m/m.0/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.19/m.0/cv1/act/Sigmoid_output_0_134_layers.19/m.0/cv1/act/Mul_output_0_119:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/cv1/conv/Conv_output_0_154": {
+            "name": "layers.16/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.15/Concat_output_0_155:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.15/Concat_output_0_155": {
+            "name": "layers.15/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.14/Resize_output_0_160:out0",
+                "@layers.4/cv2/act/Sigmoid_output_0_169_layers.4/cv2/act/Mul_output_0_161:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/MatMul_output_0_157": {
+            "name": "layers.22/m.0/m.0.1/attn/MatMul_output_0",
+            "op": "matmul",
+            "parameters": {
+                "transpose_a": false,
+                "transpose_b": false
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/Transpose_output_0_164:out0",
+                "@layers.22/m.0/m.0.1/attn/Split_output_0_182:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/cv1/conv/Conv_output_0_158": {
+            "name": "layers.19/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.18/Concat_output_0_159:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.18/Concat_output_0_159": {
+            "name": "layers.18/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.17/act/Sigmoid_output_0_174_layers.17/act/Mul_output_0_165:out0",
+                "@layers.13/cv2/act/Sigmoid_output_0_167_layers.13/cv2/act/Mul_output_0_166:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.14/Resize_output_0_160": {
+            "name": "layers.14/Resize_output_0",
+            "op": "image_resize",
+            "parameters": {
+                "type": "nearest",
+                "new_size": [
+                    80,
+                    80
+                ],
+                "align_corners": false,
+                "half_pixel": false
+            },
+            "inputs": [
+                "@layers.13/cv2/act/Sigmoid_output_0_167_layers.13/cv2/act/Mul_output_0_166:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/cv1/conv/Conv_output_0_162": {
+            "name": "layers.22/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 256,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.21/Concat_output_0_170:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/Transpose_output_0_164": {
+            "name": "layers.22/m.0/m.0.1/attn/Transpose_output_0",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    1,
+                    3,
+                    2
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/Mul_output_0_172:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.4/cv2/conv/Conv_output_0_168": {
+            "name": "layers.4/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.4/Concat_output_0_177:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.21/Concat_output_0_170": {
+            "name": "layers.21/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.20/act/Sigmoid_output_0_189_layers.20/act/Mul_output_0_179:out0",
+                "@layers.10/cv2/act/Sigmoid_output_0_181_layers.10/cv2/act/Mul_output_0_171:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/Mul_output_0_172": {
+            "name": "layers.22/m.0/m.0.1/attn/Mul_output_0",
+            "op": "multiply",
+            "parameters": {
+                "axis": 1,
+                "bias": false
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/Split_output_0_182:out0",
+                "@layers.10/m/m.0/attn/Constant_1_output_0_183:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.17/conv/Conv_output_0_173": {
+            "name": "layers.17/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 2,
+                "stride_w": 2,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.16/cv2/act/Sigmoid_output_0_65_layers.16/cv2/act/Mul_output_0_53:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/cv2/conv/Conv_output_0_175": {
+            "name": "layers.13/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.13/Concat_output_0_176:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/Concat_output_0_176": {
+            "name": "layers.13/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.13/Slice_output_0_237:out0",
+                "@layers.13/Slice_output_0_237:out1",
+                "@layers.13/m.0/cv3/act/Sigmoid_output_0_194_layers.13/m.0/cv3/act/Mul_output_0_186:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.4/Concat_output_0_177": {
+            "name": "layers.4/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.4/Slice_output_0_204:out0",
+                "@layers.4/Slice_output_0_204:out1",
+                "@layers.4/m.0/Add_output_0_178:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.4/m.0/Add_output_0_178": {
+            "name": "layers.4/m.0/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.4/Slice_output_0_204:out1",
+                "@layers.4/m.0/cv2/act/Sigmoid_output_0_196_layers.4/m.0/cv2/act/Mul_output_0_187:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/cv2/conv/Conv_output_0_180": {
+            "name": "layers.10/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 256,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.10/Concat_output_0_190:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/Split_output_0_182": {
+            "name": "layers.22/m.0/m.0.1/attn/Split_output_0",
+            "op": "split",
+            "parameters": {
+                "dim": 2,
+                "slices": [
+                    32,
+                    64
+                ],
+                "unstack": false
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/Reshape_output_0_184:out0"
+            ],
+            "outputs": [
+                "out0",
+                "out1",
+                "out2"
+            ]
+        },
+        "layers.10/m/m.0/attn/Constant_1_output_0_183": {
+            "name": "layers.10/m/m.0/attn/Constant_1_output_0",
+            "op": "variable",
+            "parameters": {
+                "shape": [],
+                "is_scalar": true,
+                "type": "float32"
+            },
+            "inputs": [],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/Reshape_output_0_184": {
+            "name": "layers.22/m.0/m.0.1/attn/Reshape_output_0",
+            "op": "reshape",
+            "parameters": {
+                "shape": [
+                    1,
+                    2,
+                    128,
+                    400
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/Reshape_output_0_184_acuity_mark_perm_366:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/qkv/conv/Conv_output_0_185": {
+            "name": "layers.22/m.0/m.0.1/attn/qkv/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 256,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.0/Add_output_0_91:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.20/conv/Conv_output_0_188": {
+            "name": "layers.20/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 2,
+                "stride_w": 2,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.19/cv2/act/Sigmoid_output_0_63_layers.19/cv2/act/Mul_output_0_51:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/Concat_output_0_190": {
+            "name": "layers.10/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.10/Split_output_0_275:out0",
+                "@layers.10/m/m.0/Add_1_output_0_191:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/Add_1_output_0_191": {
+            "name": "layers.10/m/m.0/Add_1_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.10/m/m.0/Add_output_0_199:out0",
+                "@layers.10/m/m.0/ffn/ffn.1/conv/Conv_output_0_192:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/ffn/ffn.1/conv/Conv_output_0_192": {
+            "name": "layers.10/m/m.0/ffn/ffn.1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.10/m/m.0/ffn/ffn.0/act/Sigmoid_output_0_207_layers.10/m/m.0/ffn/ffn.0/act/Mul_output_0_200:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/cv3/conv/Conv_output_0_193": {
+            "name": "layers.13/m.0/cv3/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.13/m.0/Concat_output_0_201:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.4/m.0/cv2/conv/Conv_output_0_195": {
+            "name": "layers.4/m.0/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.4/m.0/cv1/act/Sigmoid_output_0_198_layers.4/m.0/cv1/act/Mul_output_0_197:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/Add_output_0_199": {
+            "name": "layers.10/m/m.0/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.10/Split_output_0_275:out1",
+                "@layers.10/m/m.0/attn/proj/conv/Conv_output_0_205:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/Concat_output_0_201": {
+            "name": "layers.13/m.0/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.13/m.0/m/m.1/Add_output_0_208:out0",
+                "@layers.13/m.0/cv2/act/Sigmoid_output_0_210_layers.13/m.0/cv2/act/Mul_output_0_202:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.4/m.0/cv1/conv/Conv_output_0_203": {
+            "name": "layers.4/m.0/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.4/Slice_output_0_204:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.4/Slice_output_0_204": {
+            "name": "layers.4/Slice_output_0",
+            "op": "split",
+            "parameters": {
+                "dim": 3,
+                "slices": [
+                    32
+                ],
+                "unstack": false
+            },
+            "inputs": [
+                "@layers.4/cv1/act/Sigmoid_output_0_219_layers.4/cv1/act/Mul_output_0_211:out0"
+            ],
+            "outputs": [
+                "out0",
+                "out1"
+            ]
+        },
+        "layers.10/m/m.0/attn/proj/conv/Conv_output_0_205": {
+            "name": "layers.10/m/m.0/attn/proj/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/Add_output_0_212:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/ffn/ffn.0/conv/Conv_output_0_206": {
+            "name": "layers.10/m/m.0/ffn/ffn.0/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 256,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.10/m/m.0/Add_output_0_199:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/m/m.1/Add_output_0_208": {
+            "name": "layers.13/m.0/m/m.1/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.13/m.0/m/m.0/Add_output_0_215:out0",
+                "@layers.13/m.0/m/m.1/cv2/act/Sigmoid_output_0_217_layers.13/m.0/m/m.1/cv2/act/Mul_output_0_216:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/cv2/conv/Conv_output_0_209": {
+            "name": "layers.13/m.0/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.13/Slice_output_0_237:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/Add_output_0_212": {
+            "name": "layers.10/m/m.0/attn/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.10/m/m.0/attn/Add_output_0_212_acuity_mark_perm_368:out0",
+                "@layers.10/m/m.0/attn/pe/conv/Conv_output_0_213:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/pe/conv/Conv_output_0_213": {
+            "name": "layers.10/m/m.0/attn/pe/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 128,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/pe/conv/Conv_output_0_213_acuity_mark_perm_367:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/Reshape_2_output_0_214": {
+            "name": "layers.10/m/m.0/attn/Reshape_2_output_0",
+            "op": "reshape",
+            "parameters": {
+                "shape": [
+                    1,
+                    128,
+                    20,
+                    20
+                ]
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/Split_output_0_260:out2"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/m/m.0/Add_output_0_215": {
+            "name": "layers.13/m.0/m/m.0/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.13/m.0/cv1/act/Sigmoid_output_0_229_layers.13/m.0/cv1/act/Mul_output_0_221:out0",
+                "@layers.13/m.0/m/m.0/cv2/act/Sigmoid_output_0_231_layers.13/m.0/m/m.0/cv2/act/Mul_output_0_222:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.4/cv1/conv/Conv_output_0_218": {
+            "name": "layers.4/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.3/act/Sigmoid_output_0_226_layers.3/act/Mul_output_0_225:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/Reshape_1_output_0_220": {
+            "name": "layers.10/m/m.0/attn/Reshape_1_output_0",
+            "op": "reshape",
+            "parameters": {
+                "shape": [
+                    1,
+                    128,
+                    20,
+                    20
+                ]
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/MatMul_1_output_0_227:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/m/m.1/cv2/conv/Conv_output_0_223": {
+            "name": "layers.13/m.0/m/m.1/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.13/m.0/m/m.1/cv1/act/Sigmoid_output_0_233_layers.13/m.0/m/m.1/cv1/act/Mul_output_0_224:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/MatMul_1_output_0_227": {
+            "name": "layers.10/m/m.0/attn/MatMul_1_output_0",
+            "op": "matmul",
+            "parameters": {
+                "transpose_a": false,
+                "transpose_b": false
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/Split_output_0_260:out2",
+                "@layers.10/m/m.0/attn/Transpose_1_output_0_236:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/cv1/conv/Conv_output_0_228": {
+            "name": "layers.13/m.0/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.13/Slice_output_0_237:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/m/m.0/cv2/conv/Conv_output_0_230": {
+            "name": "layers.13/m.0/m/m.0/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.13/m.0/m/m.0/cv1/act/Sigmoid_output_0_240_layers.13/m.0/m/m.0/cv1/act/Mul_output_0_239:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/m/m.1/cv1/conv/Conv_output_0_232": {
+            "name": "layers.13/m.0/m/m.1/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.13/m.0/m/m.0/Add_output_0_215:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.3/conv/Conv_output_0_234": {
+            "name": "layers.3/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 2,
+                "stride_w": 2,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.2/cv2/act/Sigmoid_output_0_244_layers.2/cv2/act/Mul_output_0_235:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/Transpose_1_output_0_236": {
+            "name": "layers.10/m/m.0/attn/Transpose_1_output_0",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    1,
+                    3,
+                    2
+                ]
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/Softmax_output_0_245:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/Slice_output_0_237": {
+            "name": "layers.13/Slice_output_0",
+            "op": "split",
+            "parameters": {
+                "dim": 3,
+                "slices": [
+                    64
+                ],
+                "unstack": false
+            },
+            "inputs": [
+                "@layers.13/cv1/act/Sigmoid_output_0_242_layers.13/cv1/act/Mul_output_0_238:out0"
+            ],
+            "outputs": [
+                "out0",
+                "out1"
+            ]
+        },
+        "layers.13/m.0/m/m.0/cv1/conv/Conv_output_0_241": {
+            "name": "layers.13/m.0/m/m.0/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.13/m.0/cv1/act/Sigmoid_output_0_229_layers.13/m.0/cv1/act/Mul_output_0_221:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.2/cv2/conv/Conv_output_0_243": {
+            "name": "layers.2/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.2/Concat_output_0_248:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/Softmax_output_0_245": {
+            "name": "layers.10/m/m.0/attn/Softmax_output_0",
+            "op": "softmax",
+            "parameters": {
+                "sf_axis": -1,
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/MatMul_output_0_250:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/cv1/conv/Conv_output_0_246": {
+            "name": "layers.13/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.12/Concat_output_0_247:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.12/Concat_output_0_247": {
+            "name": "layers.12/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.11/Resize_output_0_251:out0",
+                "@layers.6/cv2/act/Sigmoid_output_0_257_layers.6/cv2/act/Mul_output_0_252:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.2/Concat_output_0_248": {
+            "name": "layers.2/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.2/Slice_output_0_270:out0",
+                "@layers.2/Slice_output_0_270:out1",
+                "@layers.2/m.0/Add_output_0_249:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.2/m.0/Add_output_0_249": {
+            "name": "layers.2/m.0/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.2/Slice_output_0_270:out1",
+                "@layers.2/m.0/cv2/act/Sigmoid_output_0_259_layers.2/m.0/cv2/act/Mul_output_0_253:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/MatMul_output_0_250": {
+            "name": "layers.10/m/m.0/attn/MatMul_output_0",
+            "op": "matmul",
+            "parameters": {
+                "transpose_a": false,
+                "transpose_b": false
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/Transpose_output_0_254:out0",
+                "@layers.10/m/m.0/attn/Split_output_0_260:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.11/Resize_output_0_251": {
+            "name": "layers.11/Resize_output_0",
+            "op": "image_resize",
+            "parameters": {
+                "type": "nearest",
+                "new_size": [
+                    40,
+                    40
+                ],
+                "align_corners": false,
+                "half_pixel": false
+            },
+            "inputs": [
+                "@layers.10/cv2/act/Sigmoid_output_0_181_layers.10/cv2/act/Mul_output_0_171:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/Transpose_output_0_254": {
+            "name": "layers.10/m/m.0/attn/Transpose_output_0",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    1,
+                    3,
+                    2
+                ]
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/Mul_output_0_255:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/Mul_output_0_255": {
+            "name": "layers.10/m/m.0/attn/Mul_output_0",
+            "op": "multiply",
+            "parameters": {
+                "axis": 1,
+                "bias": false
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/Split_output_0_260:out0",
+                "@layers.10/m/m.0/attn/Constant_1_output_0_183:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/cv2/conv/Conv_output_0_256": {
+            "name": "layers.6/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.6/Concat_output_0_262:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.2/m.0/cv2/conv/Conv_output_0_258": {
+            "name": "layers.2/m.0/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.2/m.0/cv1/act/Sigmoid_output_0_265_layers.2/m.0/cv1/act/Mul_output_0_264:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/Split_output_0_260": {
+            "name": "layers.10/m/m.0/attn/Split_output_0",
+            "op": "split",
+            "parameters": {
+                "dim": 2,
+                "slices": [
+                    32,
+                    64
+                ],
+                "unstack": false
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/Reshape_output_0_266:out0"
+            ],
+            "outputs": [
+                "out0",
+                "out1",
+                "out2"
+            ]
+        },
+        "layers.6/Concat_output_0_262": {
+            "name": "layers.6/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.6/Slice_output_0_308:out0",
+                "@layers.6/Slice_output_0_308:out1",
+                "@layers.6/m.0/cv3/act/Sigmoid_output_0_268_layers.6/m.0/cv3/act/Mul_output_0_263:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/Reshape_output_0_266": {
+            "name": "layers.10/m/m.0/attn/Reshape_output_0",
+            "op": "reshape",
+            "parameters": {
+                "shape": [
+                    1,
+                    2,
+                    128,
+                    400
+                ]
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/Reshape_output_0_266_acuity_mark_perm_369:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/cv3/conv/Conv_output_0_267": {
+            "name": "layers.6/m.0/cv3/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.6/m.0/Concat_output_0_272:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.2/m.0/cv1/conv/Conv_output_0_269": {
+            "name": "layers.2/m.0/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 8,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.2/Slice_output_0_270:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.2/Slice_output_0_270": {
+            "name": "layers.2/Slice_output_0",
+            "op": "split",
+            "parameters": {
+                "dim": 3,
+                "slices": [
+                    16
+                ],
+                "unstack": false
+            },
+            "inputs": [
+                "@layers.2/cv1/act/Sigmoid_output_0_280_layers.2/cv1/act/Mul_output_0_274:out0"
+            ],
+            "outputs": [
+                "out0",
+                "out1"
+            ]
+        },
+        "layers.10/m/m.0/attn/qkv/conv/Conv_output_0_271": {
+            "name": "layers.10/m/m.0/attn/qkv/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 256,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.10/Split_output_0_275:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/Concat_output_0_272": {
+            "name": "layers.6/m.0/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.6/m.0/m/m.1/Add_output_0_276:out0",
+                "@layers.6/m.0/cv2/act/Sigmoid_output_0_278_layers.6/m.0/cv2/act/Mul_output_0_273:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/Split_output_0_275": {
+            "name": "layers.10/Split_output_0",
+            "op": "split",
+            "parameters": {
+                "dim": 3,
+                "slices": [
+                    128
+                ],
+                "unstack": false
+            },
+            "inputs": [
+                "@layers.10/cv1/act/Sigmoid_output_0_288_layers.10/cv1/act/Mul_output_0_281:out0"
+            ],
+            "outputs": [
+                "out0",
+                "out1"
+            ]
+        },
+        "layers.6/m.0/m/m.1/Add_output_0_276": {
+            "name": "layers.6/m.0/m/m.1/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.6/m.0/m/m.0/Add_output_0_282:out0",
+                "@layers.6/m.0/m/m.1/cv2/act/Sigmoid_output_0_284_layers.6/m.0/m/m.1/cv2/act/Mul_output_0_283:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/cv2/conv/Conv_output_0_277": {
+            "name": "layers.6/m.0/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.6/Slice_output_0_308:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.2/cv1/conv/Conv_output_0_279": {
+            "name": "layers.2/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.1/act/Sigmoid_output_0_286_layers.1/act/Mul_output_0_285:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/m/m.0/Add_output_0_282": {
+            "name": "layers.6/m.0/m/m.0/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.6/m.0/cv1/act/Sigmoid_output_0_298_layers.6/m.0/cv1/act/Mul_output_0_289:out0",
+                "@layers.6/m.0/m/m.0/cv2/act/Sigmoid_output_0_300_layers.6/m.0/m/m.0/cv2/act/Mul_output_0_290:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/cv1/conv/Conv_output_0_287": {
+            "name": "layers.10/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 256,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.9/Add_output_0_295:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/m/m.1/cv2/conv/Conv_output_0_291": {
+            "name": "layers.6/m.0/m/m.1/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.6/m.0/m/m.1/cv1/act/Sigmoid_output_0_302_layers.6/m.0/m/m.1/cv1/act/Mul_output_0_292:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.1/conv/Conv_output_0_293": {
+            "name": "layers.1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 2,
+                "stride_w": 2,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.0/act/Sigmoid_output_0_304_layers.0/act/Mul_output_0_294:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.9/Add_output_0_295": {
+            "name": "layers.9/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.9/cv2/act/Sigmoid_output_0_317_layers.9/cv2/act/Mul_output_0_305:out0",
+                "@layers.8/cv2/act/Sigmoid_output_0_307_layers.8/cv2/act/Mul_output_0_296:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/cv1/conv/Conv_output_0_297": {
+            "name": "layers.6/m.0/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.6/Slice_output_0_308:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/m/m.0/cv2/conv/Conv_output_0_299": {
+            "name": "layers.6/m.0/m/m.0/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.6/m.0/m/m.0/cv1/act/Sigmoid_output_0_311_layers.6/m.0/m/m.0/cv1/act/Mul_output_0_310:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/m/m.1/cv1/conv/Conv_output_0_301": {
+            "name": "layers.6/m.0/m/m.1/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.6/m.0/m/m.0/Add_output_0_282:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.0/conv/Conv_output_0_303": {
+            "name": "layers.0/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 16,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 2,
+                "stride_w": 2,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.0/conv/Conv_output_0_303_acuity_mark_perm_370:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/cv2/conv/Conv_output_0_306": {
+            "name": "layers.8/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 256,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.8/Concat_output_0_318:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/Slice_output_0_308": {
+            "name": "layers.6/Slice_output_0",
+            "op": "split",
+            "parameters": {
+                "dim": 3,
+                "slices": [
+                    64
+                ],
+                "unstack": false
+            },
+            "inputs": [
+                "@layers.6/cv1/act/Sigmoid_output_0_313_layers.6/cv1/act/Mul_output_0_309:out0"
+            ],
+            "outputs": [
+                "out0",
+                "out1"
+            ]
+        },
+        "layers.6/m.0/m/m.0/cv1/conv/Conv_output_0_312": {
+            "name": "layers.6/m.0/m/m.0/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 32,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.6/m.0/cv1/act/Sigmoid_output_0_298_layers.6/m.0/cv1/act/Mul_output_0_289:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/cv1/conv/Conv_output_0_314": {
+            "name": "layers.6/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.5/act/Sigmoid_output_0_322_layers.5/act/Mul_output_0_315:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.9/cv2/conv/Conv_output_0_316": {
+            "name": "layers.9/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 256,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.9/Concat_output_0_323:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/Concat_output_0_318": {
+            "name": "layers.8/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.8/Slice_output_0_348:out0",
+                "@layers.8/Slice_output_0_348:out1",
+                "@layers.8/m.0/cv3/act/Sigmoid_output_0_320_layers.8/m.0/cv3/act/Mul_output_0_319:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.5/conv/Conv_output_0_321": {
+            "name": "layers.5/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 2,
+                "stride_w": 2,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.4/cv2/act/Sigmoid_output_0_169_layers.4/cv2/act/Mul_output_0_161:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.9/Concat_output_0_323": {
+            "name": "layers.9/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.9/cv1/conv/Conv_output_0_329:out0",
+                "@layers.9/m/MaxPool_output_0_330:out0",
+                "@layers.9/m_1/MaxPool_output_0_331:out0",
+                "@layers.9/m_2/MaxPool_output_0_324:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.9/m_2/MaxPool_output_0_324": {
+            "name": "layers.9/m_2/MaxPool_output_0",
+            "op": "pooling",
+            "parameters": {
+                "padding": "VALID",
+                "type": "MAX",
+                "ksize_h": 5,
+                "ksize_w": 5,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 2,
+                "pad_w": 2,
+                "round_type": "floor",
+                "pad_method": "padding_const",
+                "pad": [
+                    2,
+                    2,
+                    2,
+                    2
+                ],
+                "count_include_pad": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.9/m_1/MaxPool_output_0_331:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/cv3/conv/Conv_output_0_325": {
+            "name": "layers.8/m.0/cv3/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.8/m.0/Concat_output_0_326:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/Concat_output_0_326": {
+            "name": "layers.8/m.0/Concat_output_0",
+            "op": "concat",
+            "parameters": {
+                "dim": 3
+            },
+            "inputs": [
+                "@layers.8/m.0/m/m.1/Add_output_0_333:out0",
+                "@layers.8/m.0/cv2/act/Sigmoid_output_0_328_layers.8/m.0/cv2/act/Mul_output_0_327:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.9/cv1/conv/Conv_output_0_329": {
+            "name": "layers.9/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 128,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.8/cv2/act/Sigmoid_output_0_307_layers.8/cv2/act/Mul_output_0_296:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.9/m/MaxPool_output_0_330": {
+            "name": "layers.9/m/MaxPool_output_0",
+            "op": "pooling",
+            "parameters": {
+                "padding": "VALID",
+                "type": "MAX",
+                "ksize_h": 5,
+                "ksize_w": 5,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 2,
+                "pad_w": 2,
+                "round_type": "floor",
+                "pad_method": "padding_const",
+                "pad": [
+                    2,
+                    2,
+                    2,
+                    2
+                ],
+                "count_include_pad": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.9/cv1/conv/Conv_output_0_329:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.9/m_1/MaxPool_output_0_331": {
+            "name": "layers.9/m_1/MaxPool_output_0",
+            "op": "pooling",
+            "parameters": {
+                "padding": "VALID",
+                "type": "MAX",
+                "ksize_h": 5,
+                "ksize_w": 5,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 2,
+                "pad_w": 2,
+                "round_type": "floor",
+                "pad_method": "padding_const",
+                "pad": [
+                    2,
+                    2,
+                    2,
+                    2
+                ],
+                "count_include_pad": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.9/m/MaxPool_output_0_330:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/cv2/conv/Conv_output_0_332": {
+            "name": "layers.8/m.0/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.8/Slice_output_0_348:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/m/m.1/Add_output_0_333": {
+            "name": "layers.8/m.0/m/m.1/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.8/m.0/m/m.0/Add_output_0_335:out0",
+                "@layers.8/m.0/m/m.1/cv2/act/Sigmoid_output_0_337_layers.8/m.0/m/m.1/cv2/act/Mul_output_0_334:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/m/m.0/Add_output_0_335": {
+            "name": "layers.8/m.0/m/m.0/Add_output_0",
+            "op": "add",
+            "inputs": [
+                "@layers.8/m.0/cv1/act/Sigmoid_output_0_343_layers.8/m.0/cv1/act/Mul_output_0_338:out0",
+                "@layers.8/m.0/m/m.0/cv2/act/Sigmoid_output_0_345_layers.8/m.0/m/m.0/cv2/act/Mul_output_0_339:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/m/m.1/cv2/conv/Conv_output_0_336": {
+            "name": "layers.8/m.0/m/m.1/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.8/m.0/m/m.1/cv1/act/Sigmoid_output_0_341_layers.8/m.0/m/m.1/cv1/act/Mul_output_0_340:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/cv1/conv/Conv_output_0_342": {
+            "name": "layers.8/m.0/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.8/Slice_output_0_348:out1"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/m/m.0/cv2/conv/Conv_output_0_344": {
+            "name": "layers.8/m.0/m/m.0/cv2/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.8/m.0/m/m.0/cv1/act/Sigmoid_output_0_351_layers.8/m.0/m/m.0/cv1/act/Mul_output_0_347:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/m/m.1/cv1/conv/Conv_output_0_346": {
+            "name": "layers.8/m.0/m/m.1/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.8/m.0/m/m.0/Add_output_0_335:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/Slice_output_0_348": {
+            "name": "layers.8/Slice_output_0",
+            "op": "split",
+            "parameters": {
+                "dim": 3,
+                "slices": [
+                    128
+                ],
+                "unstack": false
+            },
+            "inputs": [
+                "@layers.8/cv1/act/Sigmoid_output_0_353_layers.8/cv1/act/Mul_output_0_349:out0"
+            ],
+            "outputs": [
+                "out0",
+                "out1"
+            ]
+        },
+        "layers.8/m.0/m/m.0/cv1/conv/Conv_output_0_350": {
+            "name": "layers.8/m.0/m/m.0/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 64,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.8/m.0/cv1/act/Sigmoid_output_0_343_layers.8/m.0/cv1/act/Mul_output_0_338:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/cv1/conv/Conv_output_0_352": {
+            "name": "layers.8/cv1/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 256,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 1,
+                "ksize_w": 1,
+                "stride_h": 1,
+                "stride_w": 1,
+                "pad_h": 0,
+                "pad_w": 0,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "inputs": [
+                "@layers.7/act/Sigmoid_output_0_355_layers.7/act/Mul_output_0_354:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.7/conv/Conv_output_0_356": {
+            "name": "layers.7/conv/Conv_output_0",
+            "op": "convolution",
+            "parameters": {
+                "padding_mode": "CONSTANT",
+                "weights": 256,
+                "padding": "VALID",
+                "bias": true,
+                "group_number": 1,
+                "regularize": false,
+                "ksize_h": 3,
+                "ksize_w": 3,
+                "stride_h": 2,
+                "stride_w": 2,
+                "pad_h": 1,
+                "pad_w": 1,
+                "dilation": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "pad_method": "padding_const",
+                "pad": [
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.6/cv2/act/Sigmoid_output_0_257_layers.6/cv2/act/Mul_output_0_252:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "images_357": {
+            "name": "images",
+            "op": "input",
+            "parameters": {
+                "size": "",
+                "channels": 1,
+                "shape": [
+                    1,
+                    3,
+                    640,
+                    640
+                ],
+                "is_scalar": false,
+                "type": "float32"
+            },
+            "inputs": [],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "attach_cls_p5/out0_5_acuity_mark_perm_358": {
+            "name": "attach_cls_p5/out0_5_acuity_mark_perm",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    3,
+                    1,
+                    2
+                ]
+            },
+            "inputs": [
+                "@cls_p5_6:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "attach_cls_p4/out0_4_acuity_mark_perm_359": {
+            "name": "attach_cls_p4/out0_4_acuity_mark_perm",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    3,
+                    1,
+                    2
+                ]
+            },
+            "inputs": [
+                "@cls_p4_7:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "attach_cls_p3/out0_3_acuity_mark_perm_360": {
+            "name": "attach_cls_p3/out0_3_acuity_mark_perm",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    3,
+                    1,
+                    2
+                ]
+            },
+            "inputs": [
+                "@cls_p3_8:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "attach_box_p5/out0_2_acuity_mark_perm_361": {
+            "name": "attach_box_p5/out0_2_acuity_mark_perm",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    3,
+                    1,
+                    2
+                ]
+            },
+            "inputs": [
+                "@box_p5_9:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "attach_box_p4/out0_1_acuity_mark_perm_362": {
+            "name": "attach_box_p4/out0_1_acuity_mark_perm",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    3,
+                    1,
+                    2
+                ]
+            },
+            "inputs": [
+                "@box_p4_10:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "attach_box_p3/out0_0_acuity_mark_perm_363": {
+            "name": "attach_box_p3/out0_0_acuity_mark_perm",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    3,
+                    1,
+                    2
+                ]
+            },
+            "inputs": [
+                "@box_p3_11:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/Add_output_0_101_acuity_mark_perm_364": {
+            "name": "layers.22/m.0/m.0.1/attn/Add_output_0_101_acuity_mark_perm",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    2,
+                    3,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/Reshape_1_output_0_115:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/pe/conv/Conv_output_0_116_acuity_mark_perm_365": {
+            "name": "layers.22/m.0/m.0.1/attn/pe/conv/Conv_output_0_116_acuity_mark_perm",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    2,
+                    3,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/Reshape_2_output_0_117:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/attn/Reshape_output_0_184_acuity_mark_perm_366": {
+            "name": "layers.22/m.0/m.0.1/attn/Reshape_output_0_184_acuity_mark_perm",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    3,
+                    1,
+                    2
+                ]
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/attn/qkv/conv/Conv_output_0_185:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/pe/conv/Conv_output_0_213_acuity_mark_perm_367": {
+            "name": "layers.10/m/m.0/attn/pe/conv/Conv_output_0_213_acuity_mark_perm",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    2,
+                    3,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/Reshape_2_output_0_214:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/Add_output_0_212_acuity_mark_perm_368": {
+            "name": "layers.10/m/m.0/attn/Add_output_0_212_acuity_mark_perm",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    2,
+                    3,
+                    1
+                ]
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/Reshape_1_output_0_220:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/attn/Reshape_output_0_266_acuity_mark_perm_369": {
+            "name": "layers.10/m/m.0/attn/Reshape_output_0_266_acuity_mark_perm",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    3,
+                    1,
+                    2
+                ]
+            },
+            "inputs": [
+                "@layers.10/m/m.0/attn/qkv/conv/Conv_output_0_271:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.0/conv/Conv_output_0_303_acuity_mark_perm_370": {
+            "name": "layers.0/conv/Conv_output_0_303_acuity_mark_perm",
+            "op": "permute",
+            "parameters": {
+                "perm": [
+                    0,
+                    2,
+                    3,
+                    1
+                ]
+            },
+            "inputs": [
+                "@images_357:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.2/cv3.2.1/cv3.2.1.1/act/Sigmoid_output_0_19_cv3.2/cv3.2.1/cv3.2.1.1/act/Mul_output_0_12": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv3.2/cv3.2.1/cv3.2.1.1/conv/Conv_output_0_18:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.1/cv3.1.1/cv3.1.1.1/act/Sigmoid_output_0_21_cv3.1/cv3.1.1/cv3.1.1.1/act/Mul_output_0_13": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv3.1/cv3.1.1/cv3.1.1.1/conv/Conv_output_0_20:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.0/cv3.0.1/cv3.0.1.1/act/Sigmoid_output_0_23_cv3.0/cv3.0.1/cv3.0.1.1/act/Mul_output_0_14": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv3.0/cv3.0.1/cv3.0.1.1/conv/Conv_output_0_22:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv2.2/cv2.2.1/act/Sigmoid_output_0_25_cv2.2/cv2.2.1/act/Mul_output_0_15": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv2.2/cv2.2.1/conv/Conv_output_0_24:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv2.1/cv2.1.1/act/Sigmoid_output_0_27_cv2.1/cv2.1.1/act/Mul_output_0_16": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv2.1/cv2.1.1/conv/Conv_output_0_26:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv2.0/cv2.0.1/act/Sigmoid_output_0_29_cv2.0/cv2.0.1/act/Mul_output_0_17": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv2.0/cv2.0.1/conv/Conv_output_0_28:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.2/cv3.2.1/cv3.2.1.0/act/Sigmoid_output_0_31_cv3.2/cv3.2.1/cv3.2.1.0/act/Mul_output_0_30": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv3.2/cv3.2.1/cv3.2.1.0/conv/Conv_output_0_42:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.1/cv3.1.1/cv3.1.1.0/act/Sigmoid_output_0_33_cv3.1/cv3.1.1/cv3.1.1.0/act/Mul_output_0_32": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv3.1/cv3.1.1/cv3.1.1.0/conv/Conv_output_0_44:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.0/cv3.0.1/cv3.0.1.0/act/Sigmoid_output_0_35_cv3.0/cv3.0.1/cv3.0.1.0/act/Mul_output_0_34": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv3.0/cv3.0.1/cv3.0.1.0/conv/Conv_output_0_46:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv2.2/cv2.2.0/act/Sigmoid_output_0_37_cv2.2/cv2.2.0/act/Mul_output_0_36": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv2.2/cv2.2.0/conv/Conv_output_0_48:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv2.1/cv2.1.0/act/Sigmoid_output_0_39_cv2.1/cv2.1.0/act/Mul_output_0_38": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv2.1/cv2.1.0/conv/Conv_output_0_50:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv2.0/cv2.0.0/act/Sigmoid_output_0_41_cv2.0/cv2.0.0/act/Mul_output_0_40": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv2.0/cv2.0.0/conv/Conv_output_0_52:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.2/cv3.2.0/cv3.2.0.1/act/Sigmoid_output_0_55_cv3.2/cv3.2.0/cv3.2.0.1/act/Mul_output_0_43": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv3.2/cv3.2.0/cv3.2.0.1/conv/Conv_output_0_54:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.1/cv3.1.0/cv3.1.0.1/act/Sigmoid_output_0_57_cv3.1/cv3.1.0/cv3.1.0.1/act/Mul_output_0_45": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv3.1/cv3.1.0/cv3.1.0.1/conv/Conv_output_0_56:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.0/cv3.0.0/cv3.0.0.1/act/Sigmoid_output_0_59_cv3.0/cv3.0.0/cv3.0.0.1/act/Mul_output_0_47": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv3.0/cv3.0.0/cv3.0.0.1/conv/Conv_output_0_58:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/cv2/act/Sigmoid_output_0_61_layers.22/cv2/act/Mul_output_0_49": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.22/cv2/conv/Conv_output_0_60:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/cv2/act/Sigmoid_output_0_63_layers.19/cv2/act/Mul_output_0_51": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.19/cv2/conv/Conv_output_0_62:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/cv2/act/Sigmoid_output_0_65_layers.16/cv2/act/Mul_output_0_53": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.16/cv2/conv/Conv_output_0_64:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.2/cv3.2.0/cv3.2.0.0/act/Sigmoid_output_0_67_cv3.2/cv3.2.0/cv3.2.0.0/act/Mul_output_0_66": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv3.2/cv3.2.0/cv3.2.0.0/conv/Conv_output_0_78:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.1/cv3.1.0/cv3.1.0.0/act/Sigmoid_output_0_69_cv3.1/cv3.1.0/cv3.1.0.0/act/Mul_output_0_68": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv3.1/cv3.1.0/cv3.1.0.0/conv/Conv_output_0_80:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "cv3.0/cv3.0.0/cv3.0.0.0/act/Sigmoid_output_0_71_cv3.0/cv3.0.0/cv3.0.0.0/act/Mul_output_0_70": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@cv3.0/cv3.0.0/cv3.0.0.0/conv/Conv_output_0_82:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/cv3/act/Sigmoid_output_0_79_layers.16/m.0/cv3/act/Mul_output_0_77": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.16/m.0/cv3/conv/Conv_output_0_81:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/cv3/act/Sigmoid_output_0_87_layers.19/m.0/cv3/act/Mul_output_0_75": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.19/m.0/cv3/conv/Conv_output_0_86:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/cv2/act/Sigmoid_output_0_99_layers.16/m.0/cv2/act/Mul_output_0_90": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.16/m.0/cv2/conv/Conv_output_0_98:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.1/ffn/ffn.0/act/Sigmoid_output_0_103_layers.22/m.0/m.0.1/ffn/ffn.0/act/Mul_output_0_93": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.1/ffn/ffn.0/conv/Conv_output_0_102:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/cv2/act/Sigmoid_output_0_107_layers.19/m.0/cv2/act/Mul_output_0_95": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.19/m.0/cv2/conv/Conv_output_0_106:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/m/m.1/cv2/act/Sigmoid_output_0_111_layers.16/m.0/m/m.1/cv2/act/Mul_output_0_97": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.16/m.0/m/m.1/cv2/conv/Conv_output_0_110:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.0/cv2/act/Sigmoid_output_0_114_layers.22/m.0/m.0.0/cv2/act/Mul_output_0_100": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.0/cv2/conv/Conv_output_0_113:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/m/m.1/cv2/act/Sigmoid_output_0_122_layers.19/m.0/m/m.1/cv2/act/Mul_output_0_105": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.19/m.0/m/m.1/cv2/conv/Conv_output_0_121:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/cv1/act/Sigmoid_output_0_125_layers.16/m.0/cv1/act/Mul_output_0_108": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.16/m.0/cv1/conv/Conv_output_0_124:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/m/m.0/cv2/act/Sigmoid_output_0_127_layers.16/m.0/m/m.0/cv2/act/Mul_output_0_109": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.16/m.0/m/m.0/cv2/conv/Conv_output_0_126:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/m/m.1/cv1/act/Sigmoid_output_0_129_layers.16/m.0/m/m.1/cv1/act/Mul_output_0_112": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.16/m.0/m/m.1/cv1/conv/Conv_output_0_128:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/m.0/m.0.0/cv1/act/Sigmoid_output_0_131_layers.22/m.0/m.0.0/cv1/act/Mul_output_0_130": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.22/m.0/m.0.0/cv1/conv/Conv_output_0_145:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/cv1/act/Sigmoid_output_0_134_layers.19/m.0/cv1/act/Mul_output_0_119": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.19/m.0/cv1/conv/Conv_output_0_133:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/m/m.0/cv2/act/Sigmoid_output_0_136_layers.19/m.0/m/m.0/cv2/act/Mul_output_0_120": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.19/m.0/m/m.0/cv2/conv/Conv_output_0_135:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/m/m.1/cv1/act/Sigmoid_output_0_138_layers.19/m.0/m/m.1/cv1/act/Mul_output_0_123": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.19/m.0/m/m.1/cv1/conv/Conv_output_0_137:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/m.0/m/m.0/cv1/act/Sigmoid_output_0_142_layers.16/m.0/m/m.0/cv1/act/Mul_output_0_141": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.16/m.0/m/m.0/cv1/conv/Conv_output_0_143:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.16/cv1/act/Sigmoid_output_0_144_layers.16/cv1/act/Mul_output_0_140": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.16/cv1/conv/Conv_output_0_154:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/m.0/m/m.0/cv1/act/Sigmoid_output_0_151_layers.19/m.0/m/m.0/cv1/act/Mul_output_0_150": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.19/m.0/m/m.0/cv1/conv/Conv_output_0_152:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.19/cv1/act/Sigmoid_output_0_153_layers.19/cv1/act/Mul_output_0_149": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.19/cv1/conv/Conv_output_0_158:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.22/cv1/act/Sigmoid_output_0_163_layers.22/cv1/act/Mul_output_0_156": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.22/cv1/conv/Conv_output_0_162:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/cv2/act/Sigmoid_output_0_167_layers.13/cv2/act/Mul_output_0_166": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.13/cv2/conv/Conv_output_0_175:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.4/cv2/act/Sigmoid_output_0_169_layers.4/cv2/act/Mul_output_0_161": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.4/cv2/conv/Conv_output_0_168:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.17/act/Sigmoid_output_0_174_layers.17/act/Mul_output_0_165": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.17/conv/Conv_output_0_173:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/cv2/act/Sigmoid_output_0_181_layers.10/cv2/act/Mul_output_0_171": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.10/cv2/conv/Conv_output_0_180:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.20/act/Sigmoid_output_0_189_layers.20/act/Mul_output_0_179": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.20/conv/Conv_output_0_188:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/cv3/act/Sigmoid_output_0_194_layers.13/m.0/cv3/act/Mul_output_0_186": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.13/m.0/cv3/conv/Conv_output_0_193:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.4/m.0/cv2/act/Sigmoid_output_0_196_layers.4/m.0/cv2/act/Mul_output_0_187": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.4/m.0/cv2/conv/Conv_output_0_195:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.4/m.0/cv1/act/Sigmoid_output_0_198_layers.4/m.0/cv1/act/Mul_output_0_197": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.4/m.0/cv1/conv/Conv_output_0_203:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/m/m.0/ffn/ffn.0/act/Sigmoid_output_0_207_layers.10/m/m.0/ffn/ffn.0/act/Mul_output_0_200": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.10/m/m.0/ffn/ffn.0/conv/Conv_output_0_206:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/cv2/act/Sigmoid_output_0_210_layers.13/m.0/cv2/act/Mul_output_0_202": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.13/m.0/cv2/conv/Conv_output_0_209:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/m/m.1/cv2/act/Sigmoid_output_0_217_layers.13/m.0/m/m.1/cv2/act/Mul_output_0_216": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.13/m.0/m/m.1/cv2/conv/Conv_output_0_223:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.4/cv1/act/Sigmoid_output_0_219_layers.4/cv1/act/Mul_output_0_211": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.4/cv1/conv/Conv_output_0_218:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.3/act/Sigmoid_output_0_226_layers.3/act/Mul_output_0_225": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.3/conv/Conv_output_0_234:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/cv1/act/Sigmoid_output_0_229_layers.13/m.0/cv1/act/Mul_output_0_221": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.13/m.0/cv1/conv/Conv_output_0_228:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/m/m.0/cv2/act/Sigmoid_output_0_231_layers.13/m.0/m/m.0/cv2/act/Mul_output_0_222": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.13/m.0/m/m.0/cv2/conv/Conv_output_0_230:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/m/m.1/cv1/act/Sigmoid_output_0_233_layers.13/m.0/m/m.1/cv1/act/Mul_output_0_224": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.13/m.0/m/m.1/cv1/conv/Conv_output_0_232:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/m.0/m/m.0/cv1/act/Sigmoid_output_0_240_layers.13/m.0/m/m.0/cv1/act/Mul_output_0_239": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.13/m.0/m/m.0/cv1/conv/Conv_output_0_241:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.13/cv1/act/Sigmoid_output_0_242_layers.13/cv1/act/Mul_output_0_238": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.13/cv1/conv/Conv_output_0_246:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.2/cv2/act/Sigmoid_output_0_244_layers.2/cv2/act/Mul_output_0_235": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.2/cv2/conv/Conv_output_0_243:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/cv2/act/Sigmoid_output_0_257_layers.6/cv2/act/Mul_output_0_252": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.6/cv2/conv/Conv_output_0_256:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.2/m.0/cv2/act/Sigmoid_output_0_259_layers.2/m.0/cv2/act/Mul_output_0_253": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.2/m.0/cv2/conv/Conv_output_0_258:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.2/m.0/cv1/act/Sigmoid_output_0_265_layers.2/m.0/cv1/act/Mul_output_0_264": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.2/m.0/cv1/conv/Conv_output_0_269:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/cv3/act/Sigmoid_output_0_268_layers.6/m.0/cv3/act/Mul_output_0_263": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.6/m.0/cv3/conv/Conv_output_0_267:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/cv2/act/Sigmoid_output_0_278_layers.6/m.0/cv2/act/Mul_output_0_273": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.6/m.0/cv2/conv/Conv_output_0_277:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.2/cv1/act/Sigmoid_output_0_280_layers.2/cv1/act/Mul_output_0_274": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.2/cv1/conv/Conv_output_0_279:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/m/m.1/cv2/act/Sigmoid_output_0_284_layers.6/m.0/m/m.1/cv2/act/Mul_output_0_283": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.6/m.0/m/m.1/cv2/conv/Conv_output_0_291:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.1/act/Sigmoid_output_0_286_layers.1/act/Mul_output_0_285": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.1/conv/Conv_output_0_293:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.10/cv1/act/Sigmoid_output_0_288_layers.10/cv1/act/Mul_output_0_281": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.10/cv1/conv/Conv_output_0_287:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/cv1/act/Sigmoid_output_0_298_layers.6/m.0/cv1/act/Mul_output_0_289": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.6/m.0/cv1/conv/Conv_output_0_297:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/m/m.0/cv2/act/Sigmoid_output_0_300_layers.6/m.0/m/m.0/cv2/act/Mul_output_0_290": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.6/m.0/m/m.0/cv2/conv/Conv_output_0_299:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/m/m.1/cv1/act/Sigmoid_output_0_302_layers.6/m.0/m/m.1/cv1/act/Mul_output_0_292": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.6/m.0/m/m.1/cv1/conv/Conv_output_0_301:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.0/act/Sigmoid_output_0_304_layers.0/act/Mul_output_0_294": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.0/conv/Conv_output_0_303:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/cv2/act/Sigmoid_output_0_307_layers.8/cv2/act/Mul_output_0_296": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.8/cv2/conv/Conv_output_0_306:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/m.0/m/m.0/cv1/act/Sigmoid_output_0_311_layers.6/m.0/m/m.0/cv1/act/Mul_output_0_310": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.6/m.0/m/m.0/cv1/conv/Conv_output_0_312:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.6/cv1/act/Sigmoid_output_0_313_layers.6/cv1/act/Mul_output_0_309": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.6/cv1/conv/Conv_output_0_314:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.9/cv2/act/Sigmoid_output_0_317_layers.9/cv2/act/Mul_output_0_305": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.9/cv2/conv/Conv_output_0_316:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/cv3/act/Sigmoid_output_0_320_layers.8/m.0/cv3/act/Mul_output_0_319": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.8/m.0/cv3/conv/Conv_output_0_325:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.5/act/Sigmoid_output_0_322_layers.5/act/Mul_output_0_315": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.5/conv/Conv_output_0_321:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/cv2/act/Sigmoid_output_0_328_layers.8/m.0/cv2/act/Mul_output_0_327": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.8/m.0/cv2/conv/Conv_output_0_332:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/m/m.1/cv2/act/Sigmoid_output_0_337_layers.8/m.0/m/m.1/cv2/act/Mul_output_0_334": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.8/m.0/m/m.1/cv2/conv/Conv_output_0_336:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/m/m.1/cv1/act/Sigmoid_output_0_341_layers.8/m.0/m/m.1/cv1/act/Mul_output_0_340": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.8/m.0/m/m.1/cv1/conv/Conv_output_0_346:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/cv1/act/Sigmoid_output_0_343_layers.8/m.0/cv1/act/Mul_output_0_338": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.8/m.0/cv1/conv/Conv_output_0_342:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/m/m.0/cv2/act/Sigmoid_output_0_345_layers.8/m.0/m/m.0/cv2/act/Mul_output_0_339": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.8/m.0/m/m.0/cv2/conv/Conv_output_0_344:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/m.0/m/m.0/cv1/act/Sigmoid_output_0_351_layers.8/m.0/m/m.0/cv1/act/Mul_output_0_347": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.8/m.0/m/m.0/cv1/conv/Conv_output_0_350:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.8/cv1/act/Sigmoid_output_0_353_layers.8/cv1/act/Mul_output_0_349": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.8/cv1/conv/Conv_output_0_352:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        },
+        "layers.7/act/Sigmoid_output_0_355_layers.7/act/Mul_output_0_354": {
+            "name": "swish",
+            "op": "swish",
+            "parameters": {
+                "beta": 1.0
+            },
+            "inputs": [
+                "@layers.7/conv/Conv_output_0_356:out0"
+            ],
+            "outputs": [
+                "out0"
+            ]
+        }
+    },
+    "quantize_info": {}
+}
