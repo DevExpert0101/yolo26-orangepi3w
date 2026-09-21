@@ -7,6 +7,8 @@ __pycache__/
 Thumbs.db
 build/
 cmake-build-*/
+third_party/onnxruntime/
+Yolo26_ONNX/third_party/
 *.o
 *.so
 *.a
