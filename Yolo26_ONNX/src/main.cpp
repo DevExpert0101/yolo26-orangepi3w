@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <type_traits>
 
 static void usage(const char *exe) {
     std::fprintf(stderr,
@@ -42,7 +43,7 @@ int main(int argc, char **argv) {
     for (int i = 3; i < argc; ++i) {
         auto eat = [&](const char *key, auto &dst) {
             if (std::strcmp(argv[i], key) == 0 && i + 1 < argc) {
-                dst = decltype(dst)(std::atof(argv[++i]));
+                dst = static_cast<std::decay_t<decltype(dst)>>(std::atof(argv[++i]));
                 return true;
             }
             return false;
