@@ -63,18 +63,25 @@ bool OnnxEngine::load(const std::string &onnx_path, int imgsz, int threads) {
             out_names_.emplace_back(name.get());
         }
 
-        const auto info = session_.GetInputTypeInfo(0).GetTensorTypeAndShapeInfo();
-        in_shape_ = info.GetShape();
-        uint8_input_ = info.GetElementType() == ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8;
-
+        // Keep TypeInfo alive: GetTensorTypeAndShapeInfo() dangles if called on a temporary
+        // (ORT 1.24 on aarch64 then reports rank 0).
+        const auto in_type = session_.GetInputTypeInfo(0);
+        if (in_type.GetONNXType() == ONNX_TYPE_TENSOR) {
+            const auto info = in_type.GetTensorTypeAndShapeInfo();
+            in_shape_ = info.GetShape();
+            uint8_input_ = info.GetElementType() == ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8;
+        }
         if (in_shape_.size() != 4) {
-            std::fprintf(stderr, "expected 4-D input, got rank %zu\n", in_shape_.size());
-            return false;
+            std::fprintf(stderr,
+                         "input rank %zu from ORT, using default NCHW 1x3x%dx%d\n",
+                         in_shape_.size(), imgsz_, imgsz_);
+            in_shape_ = {1, 3, imgsz_, imgsz_};
+            uint8_input_ = false;
         }
         // Static YOLO: {1,3,H,W}. Dynamic / NHWC: last dim is 3.
-        nhwc_ = in_shape_[3] == 3 && in_shape_[1] != 3;
+        nhwc_ = in_shape_.size() == 4 && in_shape_[3] == 3 && in_shape_[1] != 3;
         if (!nhwc_) {
-            if (in_shape_[2] > 0) {
+            if (in_shape_.size() == 4 && in_shape_[2] > 0) {
                 imgsz_ = static_cast<int>(in_shape_[2]);
             }
             in_shape_ = {1, 3, imgsz_, imgsz_};
@@ -91,13 +98,18 @@ bool OnnxEngine::load(const std::string &onnx_path, int imgsz, int threads) {
         }
         std::printf("] type=%s\n", uint8_input_ ? "uint8" : "float32");
         for (size_t i = 0; i < out_names_.size(); ++i) {
-            const auto oinfo = session_.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo();
-            const auto osh = oinfo.GetShape();
-            std::printf("onnx output[%zu]=%s [", i, out_names_[i].c_str());
-            for (size_t d = 0; d < osh.size(); ++d) {
-                std::printf("%s%lld", d ? "," : "", static_cast<long long>(osh[d]));
+            const auto otype = session_.GetOutputTypeInfo(i);
+            std::printf("onnx output[%zu]=%s", i, out_names_[i].c_str());
+            if (otype.GetONNXType() == ONNX_TYPE_TENSOR) {
+                const auto oinfo = otype.GetTensorTypeAndShapeInfo();
+                const auto osh = oinfo.GetShape();
+                std::printf(" [");
+                for (size_t d = 0; d < osh.size(); ++d) {
+                    std::printf("%s%lld", d ? "," : "", static_cast<long long>(osh[d]));
+                }
+                std::printf("]");
             }
-            std::printf("]\n");
+            std::printf("\n");
         }
         if (out_names_.size() >= 6) {
             std::printf("decode=yolo26-6head (box_p3/p4/p5 + cls_p3/p4/p5)\n");
