@@ -1,3 +1,4 @@
+#include "yolo26_types.hpp"
 #include "yolo26_onnx.hpp"
 
 #include <algorithm>
@@ -30,8 +31,8 @@ const char *coco_name(int id) {
     return kCoco[id];
 }
 
-LetterboxInfo letterbox(const cv::Mat &src, cv::Mat &dst, int imgsz) {
-    LetterboxInfo info;
+YoloLetterbox letterbox(const cv::Mat &src, cv::Mat &dst, int imgsz) {
+    YoloLetterbox info;
     info.imgsz = imgsz;
     info.ratio = std::min(static_cast<float>(imgsz) / src.rows, static_cast<float>(imgsz) / src.cols);
     const int new_w = static_cast<int>(std::round(src.cols * info.ratio));
@@ -107,7 +108,7 @@ static void nms(std::vector<Detection> &dets, float thr) {
     dets.swap(kept);
 }
 
-static void scale_box(float &x1, float &y1, float &x2, float &y2, const LetterboxInfo &lb, const cv::Size &orig) {
+static void scale_box(float &x1, float &y1, float &x2, float &y2, const YoloLetterbox &lb, const cv::Size &orig) {
     x1 = (x1 - lb.pad_x) / lb.ratio;
     y1 = (y1 - lb.pad_y) / lb.ratio;
     x2 = (x2 - lb.pad_x) / lb.ratio;
@@ -130,7 +131,7 @@ static bool match_head(size_t elems, int hw, int nc, bool &is_box) {
     return false;
 }
 
-static void decode_six_heads(const OnnxEngine &engine, const LetterboxInfo &lb, const cv::Size &orig,
+static void decode_six_heads(const OnnxEngine &engine, const YoloLetterbox &lb, const cv::Size &orig,
                              float conf, float nms_thr, int nc, std::vector<Detection> &dets) {
     dets.clear();
     const int strides[3] = {8, 16, 32};
@@ -205,7 +206,7 @@ static std::vector<int64_t> squeeze2d(const std::vector<int64_t> &shape) {
 }
 
 static void decode_single(const float *data, const std::vector<int64_t> &shape,
-                          const LetterboxInfo &lb, const cv::Size &orig, float conf, float nms_thr,
+                          const YoloLetterbox &lb, const cv::Size &orig, float conf, float nms_thr,
                           int nc, std::vector<Detection> &dets) {
     dets.clear();
     if (!data || shape.empty()) {
@@ -283,7 +284,7 @@ static void decode_single(const float *data, const std::vector<int64_t> &shape,
     nms(dets, nms_thr);
 }
 
-void decode_yolo26_onnx(const OnnxEngine &engine, const LetterboxInfo &lb, const cv::Size &orig,
+void decode_yolo26_onnx(const OnnxEngine &engine, const YoloLetterbox &lb, const cv::Size &orig,
                         float conf, float nms_thr, int nc, std::vector<Detection> &dets) {
     if (engine.output_count() >= 6) {
         decode_six_heads(engine, lb, orig, conf, nms_thr, nc, dets);

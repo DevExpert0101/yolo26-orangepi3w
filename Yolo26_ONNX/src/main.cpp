@@ -1,3 +1,4 @@
+#include "yolo26_types.hpp"
 #include "yolo26_onnx.hpp"
 
 #include <cctype>
@@ -116,7 +117,7 @@ int main(int argc, char **argv) {
         for (int r = 0; r < repeats; ++r) {
             cv::Mat rgb, letter;
             cv::cvtColor(frame, rgb, cv::COLOR_BGR2RGB);
-            const LetterboxInfo lb = letterbox(rgb, letter, engine.imgsz());
+            const YoloLetterbox lb = letterbox(rgb, letter, engine.imgsz());
             if (engine.nhwc()) {
                 pack_nhwc_f32(letter, packed);
             } else {

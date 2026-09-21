@@ -1,28 +1,12 @@
 #pragma once
 
+#include "yolo26_types.hpp"
+
 #include <onnxruntime_cxx_api.h>
-#include <opencv2/opencv.hpp>
 
 #include <cstdint>
 #include <string>
 #include <vector>
-
-#define YOLO26_NMS_THRESH 0.45f
-#define YOLO26_CONF_THRESH 0.25f
-#define YOLO26_CLASS_NUM 80
-
-struct LetterboxInfo {
-    float ratio = 1.f;
-    float pad_x = 0.f;
-    float pad_y = 0.f;
-    int   imgsz = 640;
-};
-
-struct Detection {
-    cv::Rect2f box;
-    float      score = 0.f;
-    int        class_id = -1;
-};
 
 class OnnxEngine {
 public:
@@ -54,10 +38,10 @@ private:
     bool ready_ = false;
 };
 
-LetterboxInfo letterbox(const cv::Mat &src, cv::Mat &dst, int imgsz);
+YoloLetterbox letterbox(const cv::Mat &src, cv::Mat &dst, int imgsz);
 void pack_nchw_f32(const cv::Mat &rgb, std::vector<float> &dst);
 void pack_nhwc_f32(const cv::Mat &rgb, std::vector<float> &dst);
-void decode_yolo26_onnx(const OnnxEngine &engine, const LetterboxInfo &lb, const cv::Size &orig,
+void decode_yolo26_onnx(const OnnxEngine &engine, const YoloLetterbox &lb, const cv::Size &orig,
                         float conf, float nms, int nc, std::vector<Detection> &dets);
 void draw_detections(cv::Mat &image, const std::vector<Detection> &dets);
 const char *coco_name(int id);

@@ -1,3 +1,4 @@
+#include "yolo26_types.hpp"
 #include "yolo26_onnx.hpp"
 
 #include <algorithm>
