@@ -1,39 +1,47 @@
-# YOLO26 ONNX on Orange Pi Zero 3W
+# YOLO26 on Orange Pi Zero 3W
 
-This folder can run YOLO26 in two ways:
+Board: Allwinner **A733**, Vivante **VIP9000** NPU (3 TOPS). This folder has two C++ apps.
 
-| Path | Project | Model | Runtime |
+| Path | Folder | Model | Runtime |
 |---|---|---|---|
-| **ONNX CPU (this guide)** | [`Yolo26_ONNX`](Yolo26_ONNX) | `yolo26n_6.onnx` (6-head) or e2e `yolo26n.onnx` | ONNX Runtime CPU |
-| NPU | [`Yolo26_NPU`](Yolo26_NPU) | ACUITY `*.nb` | VIPLite `/dev/vipcore` |
-
-ONNX inference does **not** need VIPLite, `/dev/vipcore`, or ACUITY. Use `yolo26n` on 1–2 GB boards.
+| **ONNX CPU** | [`Yolo26_ONNX`](Yolo26_ONNX) | `*.onnx` | ONNX Runtime CPU |
+| **NPU** | [`Yolo26_NPU`](Yolo26_NPU) | ACUITY `*.nb` | VIPLite `/dev/vipcore` |
 
 ```
-Already in this tree:  export/yolo26n_6.onnx   (6 heads: box_p3–p5 + cls_p3–p5)
-Optional PC export:    prepare_onnx.py         → export_onnx/yolo26n.onnx  (1,300,6)
-Board:  ./setup_onnx.sh  →  Yolo26_ONNX/build.sh  →  yolo26_onnx
+PC:   yolo26n.pt ──export_npu.py──► yolo26n_6.onnx ──ACUITY──► yolo26n.nb
+                                         │
+                                         ├── Yolo26_ONNX (CPU, no VIPLite)
+                                         └── Yolo26_NPU  (needs the .nb)
 ```
 
-The C++ / Python ONNX path now decodes **both** graphs. Your existing `export/yolo26*_6.onnx` files work; you do not need a second export.
+| File | Use it with | Do not |
+|---|---|---|
+| `export/yolo26n_6.onnx` | `yolo26_onnx`, `infer.py --backend onnx`, `convert_npu.sh` | `yolo26_npu` |
+| `export_onnx/yolo26n.onnx` (e2e 300×6) | `yolo26_onnx` only | `convert_npu.sh` / `yolo26_npu` |
+| `export_nb/yolo26n.nb` | `yolo26_npu`, `infer.py --backend npu` | `yolo26_onnx` |
 
-NPU setup is in **[../HELP.md](../HELP.md)** Part 1–2. Do not pass this end-to-end ONNX to `convert_npu.sh`.
+`.pt` / `.onnx` / `.nb` are gitignored. `git pull` on the board does **not** fetch weights. Copy `export/` and `export_nb/` with scp/USB.
+
+Prefer **yolo26n** on 1–2 GB boards. Start NPU with `yolo26n.nb` (~3 MB).
+
+Repo: https://github.com/DevExpert0101/yolo26-orangepi3w
 
 ---
 
 ## Contents
 
-1. [Prepare the ONNX environment (board)](#1-prepare-the-onnx-environment-board)
-2. [Export ONNX on a PC](#2-export-onnx-on-a-pc)
-3. [C++ project](#3-c-project)
-4. [Run](#4-run)
-5. [Problems](#5-problems)
+1. [Orange Pi environment](#1-orange-pi-environment)
+2. [ONNX C++ project (CPU)](#2-onnx-c-project-cpu)
+3. [Convert models to NPU](#3-convert-models-to-npu)
+4. [NPU C++ project](#4-npu-c-project)
+5. [Measure inference time](#5-measure-inference-time)
+6. [Problems](#6-problems)
 
 ---
 
-# 1. Prepare the ONNX environment (board)
+# 1. Orange Pi environment
 
-Do this **on the Orange Pi**, after you copy this folder (scp, USB, or git). Official Debian/Ubuntu aarch64 image.
+Do this **on the board** after you copy this folder (`~/Documents/yolo26-orangepi3w` in the examples). Use the **official Orange Pi Debian/Ubuntu** image. Mainline / Armbian often has no NPU userspace — `apt` cannot add `/dev/vipcore` or VIPLite.
 
 ## 1.1 Check the board
 
@@ -41,17 +49,22 @@ Do this **on the Orange Pi**, after you copy this folder (scp, USB, or git). Off
 uname -m                          # must be aarch64
 cat /proc/device-tree/model
 free -h
+ls -l /dev/vipcore                # required for NPU; not required for ONNX CPU
 ```
 
-ONNX Runtime CPU uses the Cortex-A cores + OpenBLAS. `/dev/vipcore` is **not** required.
+If `/dev/vipcore` is missing, flash the vendor image before any NPU work.
 
-On 1–2 GB boards, add swap before `apt` / `cmake` / `yolo26s`:
+## 1.2 Swap (1–2 GB boards)
+
+Needed before `apt`, `cmake`, or `yolo26s`:
 
 ```bash
-./setup_onnx.sh --swap
+cd ~/Documents/yolo26-orangepi3w
+./setup_board.sh --swap
+# or: ./setup_onnx.sh --swap
 ```
 
-or:
+Manual:
 
 ```bash
 sudo fallocate -l 2G /swapfile
@@ -61,24 +74,28 @@ sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 ```
 
-## 1.2 One-shot install
+## 1.3 C++ toolchain + OpenCV (both apps)
+
+Both `yolo26_onnx` and `yolo26_npu` need g++, CMake, OpenCV.
+
+**One-shot (NPU + OpenCV + C++):**
 
 ```bash
-cd ~/yolo26-orangepi3w          # or wherever you copied this folder
-chmod +x setup_onnx.sh run_onnx.sh Yolo26_ONNX/*.sh
-./setup_onnx.sh                 # C++ tools + OpenCV + ONNX Runtime libs
-# ./setup_onnx.sh --python      # also venv for infer.py
+cd ~/Documents/yolo26-orangepi3w
+chmod +x setup_board.sh setup_onnx.sh
+./setup_board.sh                 # apt + OpenCV + VIPLite probe
+# ./setup_board.sh --swap
+# ./setup_board.sh --python      # venv for infer.py
 ```
 
-`setup_onnx.sh` does three things:
+**ONNX only** (no VIPLite):
 
-1. `apt` packages for the C++ app
-2. Official ONNX Runtime **C/C++** tarball into `Yolo26_ONNX/third_party/onnxruntime`
-3. Optional Python `onnxruntime` if you passed `--python`
+```bash
+./setup_onnx.sh                  # apt + OpenCV + official ORT aarch64 libs
+# ./setup_onnx.sh --python
+```
 
-## 1.3 C++ toolchain
-
-If you prefer to install by hand:
+Manual apt (same packages both apps use):
 
 ```bash
 sudo apt-get update
@@ -97,45 +114,139 @@ sudo apt-get install -y \
 
 | Package | Why |
 |---|---|
-| `build-essential`, `g++`, `cmake`, `pkg-config` | compile `yolo26_onnx` |
+| `build-essential`, `g++`, `cmake`, `pkg-config` | compile both C++ apps |
 | `libopencv-*-dev` | image / camera / draw / `--save` |
-| `libopenblas-dev`, `libgomp1` | ONNX Runtime CPU math |
+| `libopenblas-dev`, `libgomp1` | ORT CPU math |
 | `libatomic1` | aarch64 C++ atomics |
 
 ```bash
-g++ --version
-cmake --version
+g++ --version                     # C++17
+cmake --version                   # ≥ 3.10
 pkg-config --modversion opencv4 || pkg-config --modversion opencv
 ```
 
-You want CMake ≥ 3.10, C++17 g++, OpenCV 4.x.
-
 Over SSH with no desktop, still install the OpenCV `-dev` packages. At run time use `--no-show --save result.jpg`.
 
-## 1.4 ONNX Runtime C/C++ (required)
+## 1.4 NPU device permission
 
-`apt` does **not** ship a usable `libonnxruntime.so` + C++ headers on this image. Download the official CPU package:
+Skip this section if you only run ONNX CPU.
 
 ```bash
-cd Yolo26_ONNX
-chmod +x fetch_onnxruntime.sh
-./fetch_onnxruntime.sh
+sudo chmod 666 /dev/vipcore
+echo 'KERNEL=="vipcore", MODE="0666"' | sudo tee /etc/udev/rules.d/99-vipcore.rules
+sudo udevadm control --reload-rules
+sudo udevadm trigger
 ```
 
-That fetches **v1.24.4** (last official Linux **aarch64** tarball from Microsoft):
+## 1.5 VIPLite libraries (NPU only)
+
+`yolo26_npu` links **`libNBGlinker.so`** and **`libVIPhal.so`**. They come with the Orange Pi / Allwinner NPU userspace, not `apt`. `./setup_board.sh` copies whatever it finds into `Yolo26_NPU/lib/`.
+
+```bash
+sudo find /usr /opt /lib /home -name 'libNBGlinker.so' -o -name 'libVIPhal.so' 2>/dev/null
+ldconfig -p | grep -E 'NBGlinker|VIPhal'
+```
+
+Typical locations: `/usr/lib/`, `/usr/lib/aarch64-linux-gnu/`, `/opt/yolov5/`, or the SDK:
+
+```
+linux_aw_npu/.../common/npuruntime/lib_linux_aarch64/A733/
+```
+
+If they are not on the loader path:
+
+```bash
+mkdir -p ~/Documents/yolo26-orangepi3w/Yolo26_NPU/lib
+cp /opt/yolov5/libNBGlinker.so /opt/yolov5/libVIPhal.so \
+   ~/Documents/yolo26-orangepi3w/Yolo26_NPU/lib/
+# copy any other libNBG* / libVIP* sitting next to those two
+```
+
+Or system-wide:
+
+```bash
+sudo cp libNBGlinker.so libVIPhal.so /usr/local/lib/
+sudo ldconfig
+```
+
+This project already bundles `Yolo26_NPU/include/vip_lite.h`. You do not need the SDK header unless you set `-DVIPLITE_ROOT=...`.
+
+## 1.6 Confirm
+
+**ONNX CPU**
+
+```bash
+ls Yolo26_ONNX/third_party/onnxruntime/include/onnxruntime_cxx_api.h
+ls Yolo26_ONNX/third_party/onnxruntime/lib/libonnxruntime.so
+```
+
+**NPU**
+
+```bash
+ls -l /dev/vipcore
+ls Yolo26_NPU/lib/libNBGlinker.so Yolo26_NPU/lib/libVIPhal.so
+# or: ldconfig -p | grep -E 'NBGlinker|VIPhal'
+```
+
+## 1.7 Optional: Python / camera
+
+C++ apps do not need pip.
+
+```bash
+./setup_board.sh --python        # infer.py + npu_runtime.py --probe
+# ./setup_board.sh --full        # also ultralytics + ncnn (heavy)
+
+v4l2-ctl --list-devices          # USB camera → source 0
+```
+
+The vendor `/opt/yolov5/yolov5` binary may want `libopencv_*so.4.5` while apt provides `*.4.5d`. That demo is YOLOv5. It is **not** required for these apps.
+
+## 1.8 Shared CMake (NPU)
+
+| Option | When |
+|---|---|
+| `-DCMAKE_BUILD_TYPE=Release` | default |
+| `-DVIPLITE_ROOT=/opt/npu` | headers/libs not in `/usr` |
+| `-DVIP_INIT_HAS_SIZE=ON` | `vip_init` link/runtime mismatch |
+
+```bash
+export VIPLITE_ROOT=/opt/npu
+export VIP_INIT_HAS_SIZE=ON
+cd Yolo26_NPU && ./build.sh
+export LD_LIBRARY_PATH=/usr/lib:Yolo26_NPU/lib:$LD_LIBRARY_PATH
+```
+
+---
+
+# 2. ONNX C++ project (CPU)
+
+Folder: [`Yolo26_ONNX`](Yolo26_ONNX). No VIPLite, no `/dev/vipcore`, no ACUITY.
+
+The decoder accepts:
+
+- **6-head** `export/yolo26n_6.onnx` — `box_p3/p4/p5` + `cls_p3/p4/p5` (already in this tree)
+- **e2e** `(1,300,6)` from `prepare_onnx.py`
+- **raw** `(1,84,8400)` one-to-many
+
+CMake target: `yolo26_onnx` (C++17, OpenCV, ONNX Runtime CPU).
+
+| Source | Role |
+|---|---|
+| `src/main.cpp` | image / video / camera + timing |
+| `src/onnx_engine.cpp` | ORT session, all outputs |
+| `src/yolo26_post.cpp` | letterbox, 6-head / e2e / raw decode, NMS |
+
+## 2.1 ONNX Runtime C/C++ on the board
+
+`apt` does not ship usable `libonnxruntime.so` + C++ headers. `./setup_onnx.sh` downloads official **v1.24.4** aarch64:
 
 ```
 https://github.com/microsoft/onnxruntime/releases/download/v1.24.4/onnxruntime-linux-aarch64-1.24.4.tgz
 ```
 
-Result:
+into `Yolo26_ONNX/third_party/onnxruntime/`.
 
-```
-Yolo26_ONNX/third_party/onnxruntime/include/onnxruntime_cxx_api.h
-Yolo26_ONNX/third_party/onnxruntime/lib/libonnxruntime.so
-```
-
-If the board has no network, download the `.tgz` on a PC, copy it over, then:
+Offline: copy the `.tgz` from a PC, then:
 
 ```bash
 mkdir -p Yolo26_ONNX/third_party
@@ -144,45 +255,16 @@ mv Yolo26_ONNX/third_party/onnxruntime-linux-aarch64-1.24.4 \
    Yolo26_ONNX/third_party/onnxruntime
 ```
 
-Override the version or location:
-
 ```bash
 export ONNXRUNTIME_VERSION=1.24.4
-export ONNXRUNTIME_ROOT=/opt/onnxruntime
+export ONNXRUNTIME_ROOT=/opt/onnxruntime   # or cmake -DONNXRUNTIME_ROOT=...
 ```
 
-CMake also accepts `-DONNXRUNTIME_ROOT=...`.
+A log line `GPU device discovery failed: /sys/class/drm/...` is normal on this board. Ignore it.
 
-## 1.5 Confirm the ONNX stack
+## 2.2 Optional: export e2e ONNX on a PC
 
-```bash
-uname -m
-g++ --version | head -n1
-cmake --version | head -n1
-pkg-config --modversion opencv4
-ls -l Yolo26_ONNX/third_party/onnxruntime/include/onnxruntime_cxx_api.h
-ls -l Yolo26_ONNX/third_party/onnxruntime/lib/libonnxruntime.so*
-```
-
-Headers + `libonnxruntime.so` + OpenCV must be present before `./build.sh`.
-
-## 1.6 Optional: Python (`infer.py`)
-
-The C++ app does not need pip.
-
-```bash
-./setup_onnx.sh --python
-source .venv/bin/activate
-python infer.py --backend onnx --model export_onnx/yolo26n.onnx --source export_onnx/bus.jpg --no-save
-```
-
----
-
-# 2. Export ONNX on a PC
-
-Do **not** export on a 1 GB board. Use a PC (Windows or Linux).
-
-This is the **end-to-end detect** graph (boxes + score + class). It is **not** the 6-head NPU ONNX from `export_npu.py`.
+Do **not** export on a 1 GB board. The 6-head file `export/yolo26n_6.onnx` is enough for CPU; this step is only if you want the `(1,300,6)` graph.
 
 **Windows**
 
@@ -191,7 +273,7 @@ python -m pip install -U -r requirements-prepare.txt
 python prepare_onnx.py --model yolo26n.pt --imgsz 640 --outdir export_onnx
 ```
 
-Or `prepare_onnx.bat`.
+Or `prepare_onnx.bat`. `--raw` exports one-to-many `(1,84,8400)` instead of e2e.
 
 **Linux**
 
@@ -202,31 +284,16 @@ python3 prepare_onnx.py --model yolo26n.pt --imgsz 640 --outdir export_onnx
 
 | File | Role |
 |---|---|
-| `export_onnx/yolo26n.onnx` | standard YOLO26 ONNX (opset 12, NMS on) |
+| `export_onnx/yolo26n.onnx` | YOLO26 e2e (`nms=False`, opset 12) |
 | `export_onnx/bus.jpg` | sample image |
-| `export_onnx/MANIFEST.txt` | copy/run reminder |
 
-`--imgsz` must match later `--imgsz` (default **640**). Prefer `yolo26n.pt` on the 3W. `yolo26s.pt` needs more RAM and is slower on CPU.
+Copy `export_onnx/` to the board. Do **not** pass this file to `convert_npu.sh`.
 
-Copy `export_onnx/` to the board (next to `Yolo26_ONNX/`).
-
----
-
-# 3. C++ project
-
-Folder: [`Yolo26_ONNX`](Yolo26_ONNX)
-
-CMake target: `yolo26_onnx` (C++17, OpenCV, ONNX Runtime CPU).
-
-| Source | Role |
-|---|---|
-| `src/main.cpp` | image / video / camera runner |
-| `src/onnx_engine.cpp` | ONNX Runtime session + NCHW/NHWC input |
-| `src/yolo26_post.cpp` | letterbox, e2e / raw-head decode, NMS, draw |
-
-Finish [Part 1](#1-prepare-the-onnx-environment-board) before building.
+## 2.3 Build
 
 ```bash
+cd ~/Documents/yolo26-orangepi3w
+./setup_onnx.sh
 cd Yolo26_ONNX
 chmod +x build.sh fetch_onnxruntime.sh
 ./build.sh
@@ -239,30 +306,20 @@ cd Yolo26_ONNX
 mkdir -p build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release \
   -DONNXRUNTIME_ROOT=$PWD/../third_party/onnxruntime
-cmake --build . -j$(nproc)
+cmake --build . -j$(nproc)          # 1 GB: -j1
 ```
-
-On a 1 GB board use `cmake --build . -j1`.
 
 Binary: `Yolo26_ONNX/build/yolo26_onnx`
 
----
-
-# 4. Run
+## 2.4 Run
 
 ```bash
-cd ~/yolo26-orangepi3w
+cd ~/Documents/yolo26-orangepi3w
+chmod +x run_onnx.sh bench_onnx.sh
 
-# picks export/yolo26n_6.onnx (or export_onnx/yolo26n.onnx) + a calib image
 ./run_onnx.sh
 ./run_onnx.sh export/yolo26n_6.onnx export/calib/bus.jpg
-
-# inference time (5 warmup + 30 timed runs)
-./bench_onnx.sh
-./bench_onnx.sh export/yolo26n_6.onnx export/calib/bus.jpg --loop 50 --threads 2
-
-# explicit files + extra flags
-./run_onnx.sh export_onnx/yolo26n.onnx export_onnx/bus.jpg --threads 2 --conf 0.3
+./run_onnx.sh export/yolo26n_6.onnx export/calib/bus.jpg --threads 2 --conf 0.3
 ```
 
 Or the binary:
@@ -271,58 +328,333 @@ Or the binary:
 cd Yolo26_ONNX/build
 export LD_LIBRARY_PATH=../third_party/onnxruntime/lib:$LD_LIBRARY_PATH
 
-# image, headless
-./yolo26_onnx /path/to/yolo26n.onnx /path/to/bus.jpg --no-show --save result.jpg
+./yolo26_onnx ../../export/yolo26n_6.onnx ../../export/calib/bus.jpg --no-show --save result.jpg
+./yolo26_onnx ../../export/yolo26n_6.onnx ../../export/calib/bus.jpg
+./yolo26_onnx ../../export/yolo26n_6.onnx 0 --threads 2
+./yolo26_onnx ../../export/yolo26n_6.onnx clip.mp4 --save out.mp4 --no-show
+```
 
-# image, show window (press q / ESC)
-./yolo26_onnx /path/to/yolo26n.onnx /path/to/bus.jpg
+| Flag | Default | Meaning |
+|---|---|---|
+| `--imgsz N` | 640 | Must match export |
+| `--conf F` | 0.25 | Score threshold |
+| `--nms F` | 0.45 | Class-aware IoU NMS (6-head / raw) |
+| `--nc N` | 80 | COCO classes |
+| `--threads N` | 4 | ORT intra-op (use 2 on 1 GB) |
+| `--loop N` | 1 | Timed repeats after warmup |
+| `--warmup N` | 3 if `--loop>1` | Discarded runs |
+| `--no-show` | off | Required over SSH |
+| `--save PATH` | `result.jpg` | Annotated image or video |
 
-# USB camera
-./yolo26_onnx /path/to/yolo26n.onnx 0 --threads 2
+Python:
 
-# video
-./yolo26_onnx /path/to/yolo26n.onnx clip.mp4 --save out.mp4 --no-show
+```bash
+./setup_onnx.sh --python
+source .venv/bin/activate
+python infer.py --backend onnx --model export/yolo26n_6.onnx --source export/calib/bus.jpg
+```
 
-# FPS on one image
-./yolo26_onnx /path/to/yolo26n.onnx bus.jpg --loop 50 --no-show
+Expected CPU time, yolo26n @ 640: about **0.5–2 s / frame**. Use the NPU app for real FPS.
+
+---
+
+# 3. Convert models to NPU
+
+The NPU does **not** run `.pt` or a default YOLO26 ONNX. ACUITY `pegasus` compiles a **6-head** ONNX to an A733 `.nb`. This step is on a **PC / WSL**, never on the 3W.
+
+```
+yolo26n.pt  ──export_npu.py──►  yolo26n_6.onnx  ──convert_npu.sh──►  yolo26n.nb
+```
+
+Quantization is **pcq** (per-channel INT8). Target:
+
+```
+VIP9000NANODI_PLUS_PID0X1000003B
+```
+
+This tree may already contain:
+
+| On the PC | Role |
+|---|---|
+| `export/yolo26n_6.onnx` | 6-head graph (also runs on ONNX CPU) |
+| `export/yolo26n_6_inputmeta.yml` | NCHW input meta for ACUITY |
+| `export/dataset.txt` + `export/calib/` | quantization images |
+| `export_nb/yolo26n.nb` | compiled NBG (copy to the board) |
+| `export_nb/wksp/yolo26n_6_pcq_nbg_unify/network_binary.nb` | same graph |
+
+## 3.1 Export 6-head ONNX (PC)
+
+YOLO26’s end-to-end NMS head is not NPU-legal. `export_npu.py` strips it and writes:
+
+```
+box_p3 (1,4,80,80)  box_p4 (1,4,40,40)  box_p5 (1,4,20,20)
+cls_p3 (1,80,80,80) cls_p4 (1,80,40,40) cls_p5 (1,80,20,20)
+```
+
+**Windows**
+
+```bat
+python -m pip install -U ultralytics onnx onnxslim
+python export_npu.py --model yolo26n.pt --imgsz 640 --outdir export
+```
+
+Or `prepare.bat`. `--all` exports n/s/m/l/x.
+
+**Linux**
+
+```bash
+python3 -m pip install -U ultralytics onnx onnxslim
+python3 export_npu.py --model yolo26n.pt --imgsz 640 --outdir export
+```
+
+`--imgsz` must match later `--imgsz` (default **640**).
+
+Do not use `prepare_onnx.py` as ACUITY input.
+
+## 3.2 ACUITY toolkit (Linux or WSL, x86_64)
+
+Not native Windows, not the 3W. From Orange Pi / KickPi `linux_aw_npu` (or VeriSilicon ACUITY):
+
+- `acuity-toolkit-whl-6.30.22` (or `acuity-toolkit-binary-*`) so `bin/pegasus` exists
+- `VivanteIDE5.11.0/cmdtools` (required for `pegasus export ovxlib`)
+
+The wheel toolkit often wants Python 3.8. The binary toolkit is easier if pip/TF fights you.
+
+```bash
+export ACUITY_PATH=$HOME/acuity-toolkit-whl-6.30.22/bin
+export VIV_SDK=$HOME/Vivante_IDE/VivanteIDE5.11.0/cmdtools
+export PATH=$ACUITY_PATH:$PATH
+pegasus help
+```
+
+Do **not** run `convert_npu.sh` with sudo (ACUITY lives in your home; sudo looks in `/root`).
+
+## 3.3 Compile the `.nb`
+
+From this folder on Linux/WSL:
+
+```bash
+chmod +x convert_npu.sh run_pegasus.sh
+export ACUITY_PATH=$HOME/acuity-toolkit-whl-6.30.22/bin
+export VIV_SDK=$HOME/Vivante_IDE/VivanteIDE5.11.0/cmdtools
+export PATH=$ACUITY_PATH:$PATH
+
+./convert_npu.sh --onnx export/yolo26n_6.onnx
+# ./convert_npu.sh --onnx export/yolo26n_6.onnx --native
+# ./convert_npu.sh --onnx export/yolo26n_6.onnx --zoo /path/to/awnpu_model_zoo
+```
+
+| Flag | Meaning |
+|---|---|
+| `--onnx PATH` | 6-head ONNX from `export_npu.py` |
+| `--name NAME` | stem (default: ONNX filename) |
+| `--imgsz N` | default from `NAME.json` or 640 |
+| `--quant TYPE` | default `pcq` |
+| `--native` | host `pegasus` (implied if on `PATH`) |
+| `--docker` | `ubuntu-npu:v2.0.10.2` (optional) |
+| `--sdk DIR` | `linux_aw_npu` tree |
+| `--zoo DIR` | optional `awnpu_model_zoo` wrappers |
+
+```bash
+export NPU_DOCKER_IMAGE=ubuntu-npu:v2.0.10.2
+./convert_npu.sh --docker --onnx export/yolo26n_6.onnx
+```
+
+Success looks like `export/yolo26n_6_pcq_a733.nb`, `export_nb/yolo26n.nb`, or `export*/wksp/**/network_binary.nb`.
+
+## 3.4 Copy to the board
+
+`.nb` is not in git.
+
+```powershell
+scp D:\1\work\orangePi\yolo26-orangepi3w\export_nb\yolo26n.nb `
+  orangepi@<board-ip>:~/Documents/yolo26-orangepi3w/export_nb/
+```
+
+Also copy a test image if needed: `export/calib/bus.jpg`.
+
+```bash
+ls -lh ~/Documents/yolo26-orangepi3w/export_nb/yolo26n.nb
+```
+
+---
+
+# 4. NPU C++ project
+
+Folder: [`Yolo26_NPU`](Yolo26_NPU). VIPLite runs the `.nb`. CPU does letterbox, dist2bbox, and NMS.
+
+Expected NPU time for YOLO26s @ 640 (Radxa A733 reference): about **35 ms** infer, ~28 FPS end-to-end. yolo26n is lighter.
+
+CMake target: `yolo26_npu` (C++17, OpenCV, `NBGlinker`, `VIPhal`).
+
+| Source | Role |
+|---|---|
+| `src/main.cpp` | image / video / camera + timing |
+| `src/viplite_engine.cpp` | VIPLite load / infer |
+| `src/yolo26_post.cpp` | letterbox, dist2bbox, NMS, draw |
+| `include/vip_lite.h` | bundled VIPLite API |
+
+Finish [Part 1](#1-orange-pi-environment) (especially 1.4–1.5) before building.
+
+## 4.1 Build
+
+```bash
+cd ~/Documents/yolo26-orangepi3w
+./setup_board.sh
+cd Yolo26_NPU
+chmod +x build.sh
+./build.sh
+```
+
+Or:
+
+```bash
+cd Yolo26_NPU
+mkdir -p lib build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake --build . -j$(nproc)
+```
+
+If `vip_init` fails to link or run:
+
+```bash
+cd Yolo26_NPU/build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DVIP_INIT_HAS_SIZE=ON
+cmake --build . -j$(nproc)
+```
+
+Binary: `Yolo26_NPU/build/yolo26_npu`
+
+## 4.2 Run
+
+```bash
+cd ~/Documents/yolo26-orangepi3w
+chmod +x run_npu.sh bench_npu.sh
+
+./run_npu.sh
+./run_npu.sh export_nb/yolo26n.nb export/calib/bus.jpg
+./run_npu.sh export_nb/wksp/yolo26n_6_pcq_nbg_unify/network_binary.nb export/calib/bus.jpg
+```
+
+Or the binary (SSH: always `--no-show`):
+
+```bash
+cd Yolo26_NPU/build
+export LD_LIBRARY_PATH=../lib:/usr/lib:$LD_LIBRARY_PATH
+
+./yolo26_npu ../../export_nb/yolo26n.nb ../../export/calib/bus.jpg --no-show --save ../../result_npu.jpg
+./yolo26_npu ../../export_nb/yolo26n.nb ../../export/calib/bus.jpg
+./yolo26_npu ../../export_nb/yolo26n.nb 0
+./yolo26_npu ../../export_nb/yolo26n.nb clip.mp4 --save out.mp4 --no-show
 ```
 
 | Flag | Default | Meaning |
 |---|---|---|
 | `--imgsz N` | 640 | Must match the exported ONNX |
 | `--conf F` | 0.25 | Score threshold |
-| `--nms F` | 0.45 | Class-aware IoU NMS (raw-head graphs) |
-| `--nc N` | 80 | COCO class count |
-| `--threads N` | 4 | ONNX Runtime intra-op threads (use 2 on 1 GB) |
-| `--loop N` | 1 | Repeat one image for timing |
-| `--no-show` | off | Headless (SSH / no display) |
+| `--nms F` | 0.45 | Class-aware IoU NMS |
+| `--nc N` | 80 | COCO classes |
+| `--loop N` | 1 | Timed repeats after warmup |
+| `--warmup N` | 3 if `--loop>1` | Discarded runs |
+| `--no-show` | off | Required over SSH |
 | `--save PATH` | `result.jpg` | Annotated image or video |
 
-Over SSH without a desktop, always pass `--no-show`.
+Python:
 
-Expected CPU time on a 3W for **yolo26n @ 640**: about **0.5–2 s / frame** depending on RAM and `--threads`. This is CPU, not NPU.
+```bash
+./setup_board.sh --python
+source .venv/bin/activate
+python infer.py --backend npu --model export_nb/yolo26n.nb --source export/calib/bus.jpg
+```
+
+If boxes look scrambled: `python infer.py --backend npu --layout hwc ...`. The C++ decoder assumes A733 **CHW** output.
+
+Do not pass `yolo26n_6.onnx` to `yolo26_npu`.
 
 ---
 
-# 5. Problems
+# 5. Measure inference time
+
+A single `./run_*.sh` is not a reliable time (first call includes runtime load). Use the bench scripts: **5 warmup + 30 timed runs**.
+
+The number to quote:
+
+| Script | Line | What it is |
+|---|---|---|
+| `./bench_onnx.sh` | **ORT infer** | ONNX Runtime `session.Run` |
+| `./bench_npu.sh` | **NPU infer** | VIPLite `vip_run` |
+
+End-to-end also includes letterbox and CPU NMS.
+
+```bash
+cd ~/Documents/yolo26-orangepi3w
+git pull
+chmod +x bench_onnx.sh bench_npu.sh run_onnx.sh run_npu.sh
+
+# rebuild after pull
+cd Yolo26_ONNX && ./build.sh && cd ..
+cd Yolo26_NPU  && ./build.sh && cd ..
+
+./bench_onnx.sh export/yolo26n_6.onnx export/calib/bus.jpg --loop 30
+./bench_npu.sh  export_nb/yolo26n.nb     export/calib/bus.jpg --loop 30
+```
+
+Example NPU summary:
+
+```
+--- NPU timing (30 timed runs, 5 warmup discarded) ---
+NPU infer   avg ...  min ...  max ... ms   (... FPS)
+preprocess  avg ... ms
+postprocess avg ... ms
+end-to-end  avg ...  min ...  max ... ms   (... FPS)
+```
+
+```bash
+./bench_onnx.sh --threads 2 --loop 50
+./bench_npu.sh --loop 50
+```
+
+---
+
+# 6. Problems
 
 | Symptom | What to do |
 |---|---|
-| `cmake` / OpenCV not found | [1.3](#13-c-toolchain) or `./setup_onnx.sh` |
-| `ONNX Runtime not found` | [1.4](#14-onnx-runtime-cc-required) `./Yolo26_ONNX/fetch_onnxruntime.sh` |
+| `/dev/vipcore` missing | Official Orange Pi image ([1.1](#11-check-the-board)) |
+| `permission denied` on `/dev/vipcore` | [1.4](#14-npu-device-permission) |
+| `cmake` / `g++` / OpenCV not found | [1.3](#13-c-toolchain--opencv-both-apps) |
+| `ONNX Runtime not found` | `./setup_onnx.sh` or `Yolo26_ONNX/fetch_onnxruntime.sh` |
 | `libonnxruntime.so: cannot open` | `export LD_LIBRARY_PATH=Yolo26_ONNX/third_party/onnxruntime/lib:$LD_LIBRARY_PATH` |
-| `wget` / GitHub fails | Download the aarch64 `.tgz` on a PC and extract as in 1.4 |
-| Board OOM while compiling | `./setup_onnx.sh --swap`, then `cmake --build . -j1` |
-| Board OOM while running | `--threads 2`, use `yolo26n`, not `s/m/l/x` |
-| No detections / huge boxes | `--imgsz` must match export (default 640). Use `prepare_onnx.py`, not `export_npu.py` |
-| ACUITY / NPU errors | Wrong path. This ONNX is for CPU only. NPU needs [../HELP.md](../HELP.md#2-yolo26-c-project) |
+| input rank 0 / load fail (ORT) | Rebuild after `git pull` (TypeInfo lifetime fix) |
+| `libNBGlinker.so: cannot open` | Copy `.so` into `Yolo26_NPU/lib` ([1.5](#15-viplite-libraries-npu-only)) |
+| `vip_init failed` / undefined `vip_init` | `-DVIP_INIT_HAS_SIZE=ON` ([1.8](#18-shared-cmake-npu)) |
+| `pegasus not on PATH` | Set `ACUITY_PATH` and `VIV_SDK` on Linux/WSL; no sudo |
+| ACUITY fails on ONNX | You exported e2e. Use `export_npu.py` (`*_6.onnx`) |
+| Missing `.nb` after `git pull` | Files are gitignored — scp from the PC ([3.4](#34-copy-to-the-board)) |
+| `yolo26_npu` given an `.onnx` | Convert first ([3](#3-convert-models-to-npu)) |
+| No detections / huge boxes | `--imgsz` must match export. Python: try `--layout hwc` |
 | OpenCV window fails over SSH | `--no-show --save result.jpg` |
-| Slow | Normal on CPU. Use `yolo26n`, `--imgsz 320` (re-export), or the NPU `.nb` app |
+| Board OOM compiling | `--swap`, `cmake --build . -j1` |
+| Board OOM running ONNX | `--threads 2`, `yolo26n` only |
+| ONNX is slow | Normal on CPU. Use `yolo26_npu` + `.nb` |
+| `/opt/yolov5/yolov5` works, this app does not | That demo is YOLOv5. YOLO26 needs this 6-head `.nb` |
 
-## Checklist
+---
 
-1. PC: `python prepare_onnx.py --model yolo26n.pt --outdir export_onnx`
-2. Copy this folder + `export_onnx/` to the Orange Pi
-3. Board: `./setup_onnx.sh` (add `--swap` on 1 GB)
-4. `cd Yolo26_ONNX && ./build.sh`
-5. `./run_onnx.sh` or `./build/yolo26_onnx model.onnx bus.jpg --no-show --save result.jpg`
+## Checklists
+
+**ONNX CPU**
+
+1. Board: `./setup_onnx.sh` (`--swap` on 1 GB)
+2. `cd Yolo26_ONNX && ./build.sh`
+3. `./run_onnx.sh export/yolo26n_6.onnx export/calib/bus.jpg`
+4. Time: `./bench_onnx.sh`
+
+**NPU**
+
+1. PC: `python export_npu.py --model yolo26n.pt --outdir export`
+2. Linux/WSL: `./convert_npu.sh --onnx export/yolo26n_6.onnx`
+3. scp `*.nb` to the board (`export_nb/` is not in git)
+4. Board: `./setup_board.sh` then `cd Yolo26_NPU && ./build.sh`
+5. `./run_npu.sh export_nb/yolo26n.nb export/calib/bus.jpg`
+6. Time: `./bench_npu.sh`
