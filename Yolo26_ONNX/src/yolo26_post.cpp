@@ -118,6 +118,79 @@ static void scale_box(float &x1, float &y1, float &x2, float &y2, const Letterbo
     y2 = std::clamp(y2, 0.f, static_cast<float>(orig.height - 1));
 }
 
+static bool match_head(size_t elems, int hw, int nc, bool &is_box) {
+    if (elems == static_cast<size_t>(4 * hw)) {
+        is_box = true;
+        return true;
+    }
+    if (elems == static_cast<size_t>(nc * hw)) {
+        is_box = false;
+        return true;
+    }
+    return false;
+}
+
+static void decode_six_heads(const OnnxEngine &engine, const LetterboxInfo &lb, const cv::Size &orig,
+                             float conf, float nms_thr, int nc, std::vector<Detection> &dets) {
+    dets.clear();
+    const int strides[3] = {8, 16, 32};
+    for (int s = 0; s < 3; ++s) {
+        const int stride = strides[s];
+        const int h = lb.imgsz / stride;
+        const int w = h;
+        const int hw = h * w;
+        const float *box = nullptr;
+        const float *cls = nullptr;
+        for (size_t i = 0; i < engine.output_count(); ++i) {
+            bool is_box = false;
+            if (!match_head(engine.output_elements(static_cast<int>(i)), hw, nc, is_box)) {
+                continue;
+            }
+            if (is_box && !box) {
+                box = engine.output_f32(static_cast<int>(i));
+            } else if (!is_box && !cls) {
+                cls = engine.output_f32(static_cast<int>(i));
+            }
+        }
+        if (!box || !cls) {
+            std::fprintf(stderr, "missing YOLO26 head for stride %d (imgsz=%d)\n", stride, lb.imgsz);
+            continue;
+        }
+        for (int y = 0; y < h; ++y) {
+            for (int x = 0; x < w; ++x) {
+                const int cell = y * w + x;
+                int best_c = 0;
+                float best = -1e9f;
+                for (int c = 0; c < nc; ++c) {
+                    const float logit = cls[c * hw + cell];
+                    if (logit > best) {
+                        best = logit;
+                        best_c = c;
+                    }
+                }
+                const float score = 1.f / (1.f + std::exp(-best));
+                if (score < conf) {
+                    continue;
+                }
+                const float l = box[0 * hw + cell];
+                const float t = box[1 * hw + cell];
+                const float r = box[2 * hw + cell];
+                const float b = box[3 * hw + cell];
+                float x1 = (static_cast<float>(x) + 0.5f - l) * static_cast<float>(stride);
+                float y1 = (static_cast<float>(y) + 0.5f - t) * static_cast<float>(stride);
+                float x2 = (static_cast<float>(x) + 0.5f + r) * static_cast<float>(stride);
+                float y2 = (static_cast<float>(y) + 0.5f + b) * static_cast<float>(stride);
+                scale_box(x1, y1, x2, y2, lb, orig);
+                if (x2 <= x1 || y2 <= y1) {
+                    continue;
+                }
+                dets.push_back({cv::Rect2f(x1, y1, x2 - x1, y2 - y1), score, best_c});
+            }
+        }
+    }
+    nms(dets, nms_thr);
+}
+
 static std::vector<int64_t> squeeze2d(const std::vector<int64_t> &shape) {
     std::vector<int64_t> dims;
     for (auto d : shape) {
@@ -131,9 +204,9 @@ static std::vector<int64_t> squeeze2d(const std::vector<int64_t> &shape) {
     return dims;
 }
 
-void decode_yolo26_onnx(const float *data, const std::vector<int64_t> &shape,
-                        const LetterboxInfo &lb, const cv::Size &orig,
-                        float conf, float nms_thr, int nc, std::vector<Detection> &dets) {
+static void decode_single(const float *data, const std::vector<int64_t> &shape,
+                          const LetterboxInfo &lb, const cv::Size &orig, float conf, float nms_thr,
+                          int nc, std::vector<Detection> &dets) {
     dets.clear();
     if (!data || shape.empty()) {
         return;
@@ -208,6 +281,15 @@ void decode_yolo26_onnx(const float *data, const std::vector<int64_t> &shape,
         dets.push_back({cv::Rect2f(x1, y1, x2 - x1, y2 - y1), best, best_c});
     }
     nms(dets, nms_thr);
+}
+
+void decode_yolo26_onnx(const OnnxEngine &engine, const LetterboxInfo &lb, const cv::Size &orig,
+                        float conf, float nms_thr, int nc, std::vector<Detection> &dets) {
+    if (engine.output_count() >= 6) {
+        decode_six_heads(engine, lb, orig, conf, nms_thr, nc, dets);
+        return;
+    }
+    decode_single(engine.output_f32(0), engine.output_shape(0), lb, orig, conf, nms_thr, nc, dets);
 }
 
 void draw_detections(cv::Mat &image, const std::vector<Detection> &dets) {

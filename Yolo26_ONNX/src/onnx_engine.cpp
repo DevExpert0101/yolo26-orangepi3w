@@ -15,9 +15,34 @@ size_t OnnxEngine::input_elements() const {
     return n;
 }
 
+const float *OnnxEngine::output_f32(int index) const {
+    if (index < 0 || static_cast<size_t>(index) >= host_out_.size() || host_out_[index].empty()) {
+        return nullptr;
+    }
+    return host_out_[index].data();
+}
+
+size_t OnnxEngine::output_elements(int index) const {
+    if (index < 0 || static_cast<size_t>(index) >= host_out_.size()) {
+        return 0;
+    }
+    return host_out_[index].size();
+}
+
+const std::vector<int64_t> &OnnxEngine::output_shape(int index) const {
+    static const std::vector<int64_t> empty;
+    if (index < 0 || static_cast<size_t>(index) >= out_shapes_.size()) {
+        return empty;
+    }
+    return out_shapes_[index];
+}
+
 bool OnnxEngine::load(const std::string &onnx_path, int imgsz, int threads) {
     imgsz_ = imgsz;
     ready_ = false;
+    out_names_.clear();
+    host_out_.clear();
+    out_shapes_.clear();
     try {
         opts_ = Ort::SessionOptions();
         opts_.SetIntraOpNumThreads(std::max(1, threads));
@@ -31,9 +56,11 @@ bool OnnxEngine::load(const std::string &onnx_path, int imgsz, int threads) {
         }
 
         const auto in_name = session_.GetInputNameAllocated(0, allocator_);
-        const auto out_name = session_.GetOutputNameAllocated(0, allocator_);
         in_name_ = in_name.get();
-        out_name_ = out_name.get();
+        for (size_t i = 0; i < session_.GetOutputCount(); ++i) {
+            const auto name = session_.GetOutputNameAllocated(i, allocator_);
+            out_names_.emplace_back(name.get());
+        }
 
         const auto info = session_.GetInputTypeInfo(0).GetTensorTypeAndShapeInfo();
         in_shape_ = info.GetShape();
@@ -43,28 +70,39 @@ bool OnnxEngine::load(const std::string &onnx_path, int imgsz, int threads) {
             std::fprintf(stderr, "expected 4-D input, got rank %zu\n", in_shape_.size());
             return false;
         }
-        // NCHW {1,3,H,W} or NHWC {1,H,W,3}
-        nhwc_ = in_shape_[3] == 3 || in_shape_[1] != 3;
-        for (auto &d : in_shape_) {
-            if (d <= 0) {
-                d = imgsz_;
+        // Static YOLO: {1,3,H,W}. Dynamic / NHWC: last dim is 3.
+        nhwc_ = in_shape_[3] == 3 && in_shape_[1] != 3;
+        if (!nhwc_) {
+            if (in_shape_[2] > 0) {
+                imgsz_ = static_cast<int>(in_shape_[2]);
             }
-        }
-        if (nhwc_) {
-            in_shape_[1] = imgsz_;
-            in_shape_[2] = imgsz_;
-            in_shape_[3] = 3;
+            in_shape_ = {1, 3, imgsz_, imgsz_};
         } else {
-            in_shape_[1] = 3;
-            in_shape_[2] = imgsz_;
-            in_shape_[3] = imgsz_;
+            if (in_shape_[1] > 0) {
+                imgsz_ = static_cast<int>(in_shape_[1]);
+            }
+            in_shape_ = {1, imgsz_, imgsz_, 3};
         }
 
         std::printf("onnx input=%s %s [", in_name_.c_str(), nhwc_ ? "NHWC" : "NCHW");
         for (size_t i = 0; i < in_shape_.size(); ++i) {
             std::printf("%s%lld", i ? "," : "", static_cast<long long>(in_shape_[i]));
         }
-        std::printf("] type=%s  output=%s\n", uint8_input_ ? "uint8" : "float32", out_name_.c_str());
+        std::printf("] type=%s\n", uint8_input_ ? "uint8" : "float32");
+        for (size_t i = 0; i < out_names_.size(); ++i) {
+            const auto oinfo = session_.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo();
+            const auto osh = oinfo.GetShape();
+            std::printf("onnx output[%zu]=%s [", i, out_names_[i].c_str());
+            for (size_t d = 0; d < osh.size(); ++d) {
+                std::printf("%s%lld", d ? "," : "", static_cast<long long>(osh[d]));
+            }
+            std::printf("]\n");
+        }
+        if (out_names_.size() >= 6) {
+            std::printf("decode=yolo26-6head (box_p3/p4/p5 + cls_p3/p4/p5)\n");
+        } else {
+            std::printf("decode=single-tensor (e2e 300x6 or 4+nc x N)\n");
+        }
         ready_ = true;
         return true;
     } catch (const Ort::Exception &ex) {
@@ -91,26 +129,41 @@ bool OnnxEngine::infer(const float *nchw, size_t elements) {
                 const float v = nchw[i] * 255.f;
                 u8[i] = static_cast<uint8_t>(std::clamp(v, 0.f, 255.f));
             }
-            tensor = Ort::Value::CreateTensor<uint8_t>(mem, u8.data(), u8.size(), in_shape_.data(), in_shape_.size());
+            tensor = Ort::Value::CreateTensor<uint8_t>(mem, u8.data(), u8.size(), in_shape_.data(),
+                                                       in_shape_.size());
         } else {
-            tensor = Ort::Value::CreateTensor<float>(
-                mem, const_cast<float *>(nchw), elements, in_shape_.data(), in_shape_.size());
+            tensor = Ort::Value::CreateTensor<float>(mem, const_cast<float *>(nchw), elements,
+                                                     in_shape_.data(), in_shape_.size());
         }
 
         const char *in_names[] = {in_name_.c_str()};
-        const char *out_names[] = {out_name_.c_str()};
-        auto outs = session_.Run(Ort::RunOptions{nullptr}, in_names, &tensor, 1, out_names, 1);
-        if (outs.empty() || !outs[0].IsTensor()) {
-            std::fprintf(stderr, "ONNX produced no tensor output\n");
+        std::vector<const char *> out_names;
+        out_names.reserve(out_names_.size());
+        for (const auto &n : out_names_) {
+            out_names.push_back(n.c_str());
+        }
+        auto outs = session_.Run(Ort::RunOptions{nullptr}, in_names, &tensor, 1, out_names.data(),
+                                 out_names.size());
+        if (outs.size() != out_names_.size()) {
+            std::fprintf(stderr, "ONNX returned %zu outputs, expected %zu\n", outs.size(),
+                         out_names_.size());
             return false;
         }
-        const auto out_info = outs[0].GetTensorTypeAndShapeInfo();
-        out_shape_ = out_info.GetShape();
-        const size_t n = static_cast<size_t>(
-            std::accumulate(out_shape_.begin(), out_shape_.end(), int64_t{1},
-                            [](int64_t a, int64_t b) { return a * (b > 0 ? b : 1); }));
-        const float *src = outs[0].GetTensorData<float>();
-        host_out_.assign(src, src + n);
+        host_out_.resize(outs.size());
+        out_shapes_.resize(outs.size());
+        for (size_t i = 0; i < outs.size(); ++i) {
+            if (!outs[i].IsTensor()) {
+                std::fprintf(stderr, "ONNX output[%zu] is not a tensor\n", i);
+                return false;
+            }
+            const auto info = outs[i].GetTensorTypeAndShapeInfo();
+            out_shapes_[i] = info.GetShape();
+            const size_t n = static_cast<size_t>(std::accumulate(
+                out_shapes_[i].begin(), out_shapes_[i].end(), int64_t{1},
+                [](int64_t a, int64_t b) { return a * (b > 0 ? b : 1); }));
+            const float *src = outs[i].GetTensorData<float>();
+            host_out_[i].assign(src, src + n);
+        }
         return true;
     } catch (const Ort::Exception &ex) {
         std::fprintf(stderr, "ONNX infer failed: %s\n", ex.what());

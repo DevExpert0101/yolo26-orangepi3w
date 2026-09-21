@@ -116,11 +116,19 @@ def scale_boxes(boxes: np.ndarray, ratio: float, pad: tuple[float, float], shape
     return boxes
 
 
-def parse_onnx_output(raw, conf: float, iou: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    pred = raw[0] if isinstance(raw, (list, tuple)) else raw
-    pred = np.squeeze(pred)
+def parse_onnx_output(
+    raw, conf: float, iou: float, imgsz: int = 640, nc: int = 80
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    outs = list(raw) if isinstance(raw, (list, tuple)) else [raw]
+    # 6-head NPU export: box_p3/p4/p5 + cls_p3/p4/p5
+    if len(outs) >= 6:
+        from npu_runtime import decode_yolo26_6
+
+        return decode_yolo26_6(outs, imgsz, conf, iou, nc=nc, layout="chw", nms_fn=nms)
+
+    pred = np.squeeze(outs[0])
     if pred.ndim != 2:
-        raise RuntimeError(f"Unexpected ONNX output shape: {getattr(raw, 'shape', type(raw))}")
+        raise RuntimeError(f"Unexpected ONNX output shape: {getattr(outs[0], 'shape', type(outs[0]))}")
 
     # YOLO26 end-to-end: (300, 6) = xyxy, score, class
     if pred.shape[-1] == 6:
@@ -169,7 +177,7 @@ def draw(image: np.ndarray, boxes, scores, classes) -> np.ndarray:
 
 
 class OnnxEngine:
-    def __init__(self, model: str, imgsz: int, conf: float, iou: float, threads: int):
+    def __init__(self, model: str, imgsz: int, conf: float, iou: float, threads: int, nc: int = 80):
         import onnxruntime as ort
 
         opts = ort.SessionOptions()
@@ -177,17 +185,31 @@ class OnnxEngine:
         opts.inter_op_num_threads = 1
         providers = ["CPUExecutionProvider"]
         self.session = ort.InferenceSession(model, opts, providers=providers)
-        self.input_name = self.session.get_inputs()[0].name
-        self.imgsz = imgsz
+        inp = self.session.get_inputs()[0]
+        self.input_name = inp.name
+        self.input_uint8 = "uint8" in str(inp.type)
+        shape = [d if isinstance(d, int) and d > 0 else imgsz for d in inp.shape]
+        if len(shape) == 4 and shape[1] == 3:
+            self.imgsz = int(shape[2])
+        else:
+            self.imgsz = imgsz
         self.conf = conf
         self.iou = iou
+        self.nc = nc
+        print(
+            "onnx outputs:",
+            [(o.name, o.shape) for o in self.session.get_outputs()],
+            "decode=6head" if len(self.session.get_outputs()) >= 6 else "decode=single",
+        )
 
     def __call__(self, bgr: np.ndarray):
         lb, ratio, pad = letterbox(bgr, self.imgsz)
         rgb = cv2.cvtColor(lb, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
         tensor = np.transpose(rgb, (2, 0, 1))[None]
+        if self.input_uint8:
+            tensor = np.clip(tensor * 255.0, 0, 255).astype(np.uint8)
         raw = self.session.run(None, {self.input_name: tensor})
-        boxes, scores, classes = parse_onnx_output(raw, self.conf, self.iou)
+        boxes, scores, classes = parse_onnx_output(raw, self.conf, self.iou, self.imgsz, self.nc)
         boxes = scale_boxes(boxes, ratio, pad, bgr.shape[:2]) if len(boxes) else boxes
         return boxes, scores, classes
 
@@ -316,7 +338,7 @@ def main() -> int:
     if backend == "npu":
         engine = NpuEngine(args.model, args.imgsz, args.conf, args.iou, args.layout, args.nc)
     elif backend == "onnx":
-        engine = OnnxEngine(args.model, args.imgsz, args.conf, args.iou, args.threads)
+        engine = OnnxEngine(args.model, args.imgsz, args.conf, args.iou, args.threads, args.nc)
     else:
         engine = UltralyticsEngine(args.model, args.imgsz, args.conf, args.iou, args.device)
 

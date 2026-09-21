@@ -4,15 +4,18 @@ This folder can run YOLO26 in two ways:
 
 | Path | Project | Model | Runtime |
 |---|---|---|---|
-| **ONNX CPU (this guide)** | [`Yolo26_ONNX`](Yolo26_ONNX) | standard `yolo26n.onnx` | ONNX Runtime CPU |
+| **ONNX CPU (this guide)** | [`Yolo26_ONNX`](Yolo26_ONNX) | `yolo26n_6.onnx` (6-head) or e2e `yolo26n.onnx` | ONNX Runtime CPU |
 | NPU | [`Yolo26_NPU`](Yolo26_NPU) | ACUITY `*.nb` | VIPLite `/dev/vipcore` |
 
 ONNX inference does **not** need VIPLite, `/dev/vipcore`, or ACUITY. Use `yolo26n` on 1–2 GB boards.
 
 ```
-PC:  yolo26n.pt  ──prepare_onnx.py──►  yolo26n.onnx
+Already in this tree:  export/yolo26n_6.onnx   (6 heads: box_p3–p5 + cls_p3–p5)
+Optional PC export:    prepare_onnx.py         → export_onnx/yolo26n.onnx  (1,300,6)
 Board:  ./setup_onnx.sh  →  Yolo26_ONNX/build.sh  →  yolo26_onnx
 ```
+
+The C++ / Python ONNX path now decodes **both** graphs. Your existing `export/yolo26*_6.onnx` files work; you do not need a second export.
 
 NPU setup is in **[../HELP.md](../HELP.md)** Part 1–2. Do not pass this end-to-end ONNX to `convert_npu.sh`.
 
@@ -250,8 +253,9 @@ Binary: `Yolo26_ONNX/build/yolo26_onnx`
 ```bash
 cd ~/yolo26-orangepi3w
 
-# defaults: export_onnx/yolo26n.onnx + export_onnx/bus.jpg → result.jpg
+# picks export/yolo26n_6.onnx (or export_onnx/yolo26n.onnx) + a calib image
 ./run_onnx.sh
+./run_onnx.sh export/yolo26n_6.onnx export/calib/bus.jpg
 
 # explicit files + extra flags
 ./run_onnx.sh export_onnx/yolo26n.onnx export_onnx/bus.jpg --threads 2 --conf 0.3

@@ -28,8 +28,10 @@ class OnnxEngine {
 public:
     bool load(const std::string &onnx_path, int imgsz, int threads);
     bool infer(const float *nchw, size_t elements);
-    const float *output_f32() const { return host_out_.empty() ? nullptr : host_out_.data(); }
-    const std::vector<int64_t> &output_shape() const { return out_shape_; }
+    size_t output_count() const { return host_out_.size(); }
+    const float *output_f32(int index = 0) const;
+    size_t output_elements(int index = 0) const;
+    const std::vector<int64_t> &output_shape(int index = 0) const;
     const std::vector<int64_t> &input_shape() const { return in_shape_; }
     size_t input_elements() const;
     bool nhwc() const { return nhwc_; }
@@ -42,10 +44,10 @@ private:
     Ort::Session session_{nullptr};
     Ort::AllocatorWithDefaultOptions allocator_;
     std::string in_name_;
-    std::string out_name_;
+    std::vector<std::string> out_names_;
     std::vector<int64_t> in_shape_;
-    std::vector<int64_t> out_shape_;
-    std::vector<float> host_out_;
+    std::vector<std::vector<int64_t>> out_shapes_;
+    std::vector<std::vector<float>> host_out_;
     int imgsz_ = 640;
     bool nhwc_ = false;
     bool uint8_input_ = false;
@@ -55,8 +57,7 @@ private:
 LetterboxInfo letterbox(const cv::Mat &src, cv::Mat &dst, int imgsz);
 void pack_nchw_f32(const cv::Mat &rgb, std::vector<float> &dst);
 void pack_nhwc_f32(const cv::Mat &rgb, std::vector<float> &dst);
-void decode_yolo26_onnx(const float *data, const std::vector<int64_t> &shape,
-                        const LetterboxInfo &lb, const cv::Size &orig,
+void decode_yolo26_onnx(const OnnxEngine &engine, const LetterboxInfo &lb, const cv::Size &orig,
                         float conf, float nms, int nc, std::vector<Detection> &dets);
 void draw_detections(cv::Mat &image, const std::vector<Detection> &dets);
 const char *coco_name(int id);

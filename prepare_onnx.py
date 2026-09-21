@@ -23,7 +23,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--imgsz", type=int, default=640)
     parser.add_argument("--opset", type=int, default=12, help="12 is safest for older onnxruntime")
     parser.add_argument("--outdir", default="export_onnx")
-    parser.add_argument("--no-nms", action="store_true", help="Export raw heads (slower decode)")
+    parser.add_argument(
+        "--raw",
+        action="store_true",
+        help="Export one-to-many (1,84,8400) instead of YOLO26 e2e (1,300,6)",
+    )
     return parser.parse_args()
 
 
@@ -76,10 +80,15 @@ def main() -> int:
         opset=args.opset,
         device="cpu",
     )
-    if not args.no_nms:
-        export_kw["nms"] = True
+    # YOLO26: nms=False is the native one-to-one head (1,300,6). nms=True embeds
+    # older NMS ops that many aarch64 ORT builds reject.
+    if args.raw:
+        export_kw["nms"] = None
+        export_kw["end2end"] = False
+    else:
+        export_kw["nms"] = False
 
-    print(f"Exporting ONNX imgsz={args.imgsz} opset={args.opset} nms={not args.no_nms}")
+    print(f"Exporting ONNX imgsz={args.imgsz} opset={args.opset} e2e={not args.raw}")
     exported = Path(model.export(**export_kw))
     dest = outdir / exported.name
     if exported.resolve() != dest:

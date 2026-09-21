@@ -128,8 +128,7 @@ int main(int argc, char **argv) {
                 std::fprintf(stderr, "ONNX infer failed\n");
                 return 4;
             }
-            decode_yolo26_onnx(engine.output_f32(), engine.output_shape(), lb, frame.size(), conf, nms, nc,
-                               dets);
+            decode_yolo26_onnx(engine, lb, frame.size(), conf, nms, nc, dets);
             const auto t1 = std::chrono::steady_clock::now();
             const double ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
             acc_ms += ms;
