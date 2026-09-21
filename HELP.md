@@ -257,6 +257,10 @@ cd ~/yolo26-orangepi3w
 ./run_onnx.sh
 ./run_onnx.sh export/yolo26n_6.onnx export/calib/bus.jpg
 
+# inference time (5 warmup + 30 timed runs)
+./bench_onnx.sh
+./bench_onnx.sh export/yolo26n_6.onnx export/calib/bus.jpg --loop 50 --threads 2
+
 # explicit files + extra flags
 ./run_onnx.sh export_onnx/yolo26n.onnx export_onnx/bus.jpg --threads 2 --conf 0.3
 ```
