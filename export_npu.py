@@ -210,7 +210,7 @@ def write_acuity_sidecars(outdir: Path, stem: str, imgsz: int, nc: int, strides:
                 "outputs": ["box_p3", "box_p4", "box_p5", "cls_p3", "cls_p4", "cls_p5"],
                 "optimize": "VIP9000NANODI_PLUS_PID0X1000003B",
                 "platform": "a733",
-                "quant": "pcq",
+                "quant": "fp16",
             },
             indent=2,
         )
@@ -296,7 +296,8 @@ def main() -> int:
     print("  export ACUITY_PATH=$HOME/acuity-toolkit-whl-6.30.22/bin")
     print("  export VIV_SDK=$HOME/Vivante_IDE/VivanteIDE5.11.0/cmdtools")
     for path in written:
-        print(f"  ./convert_npu.sh --onnx {path}")
+        print(f"  ./convert_npu.sh --onnx {path} --quant fp16")
+        print(f"  # INT8: ./convert_npu.sh --onnx {path} --quant pcq")
     if failed:
         print("Failed:")
         for line in failed:

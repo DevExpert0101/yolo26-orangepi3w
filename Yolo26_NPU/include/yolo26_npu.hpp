@@ -27,6 +27,10 @@ struct Detection {
 struct TensorInfo {
     std::string name;
     int         format = 0;
+    int         quant_format = 0;
+    float       scale = 1.f;
+    int         zero_point = 0;
+    int         fl = 0;
     int         dims = 0;
     uint32_t    sizes[VIP_MAX_DIM_NUM] = {};
     size_t      elements = 0;
@@ -37,6 +41,7 @@ class VipEngine {
 public:
     ~VipEngine();
     bool load(const std::string &nbg_path);
+    void pack_rgb(const cv::Mat &rgb, std::vector<uint8_t> &dst) const;
     bool infer(const uint8_t *nchw_or_packed, size_t bytes);
     const std::vector<TensorInfo> &inputs() const { return inputs_; }
     const std::vector<TensorInfo> &outputs() const { return outputs_; }

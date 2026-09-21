@@ -52,6 +52,10 @@ VIP_BUFFER_FORMAT_UINT8 = 2
 VIP_BUFFER_FORMAT_INT8 = 3
 VIP_BUFFER_FORMAT_INT16 = 4
 
+VIP_BUFFER_QUANTIZE_NONE = 0
+VIP_BUFFER_QUANTIZE_DYNAMIC_FIXED_POINT = 1
+VIP_BUFFER_QUANTIZE_TF_ASYMM = 2
+
 FORMAT_DTYPE = {
     VIP_BUFFER_FORMAT_FP32: np.float32,
     VIP_BUFFER_FORMAT_FP16: np.float16,
@@ -71,6 +75,10 @@ class VipBufferCreateParams(ctypes.Structure):
         ("quant_zero_point", c_int32),
         ("memory_type", c_uint32),
     ]
+
+
+class VipQuantAffine(ctypes.Structure):
+    _fields_ = [("scale", c_float), ("zero_point", c_int32)]
 
 
 def _find_lib(name: str) -> str:
@@ -201,7 +209,29 @@ class VipLite:
             query(self.net, i, VIP_BUFFER_PROP_DATA_FORMAT, ctypes.byref(fmt))
             query(self.net, i, VIP_BUFFER_PROP_NAME, name)
             shape = [sizes[j] for j in range(dims_n.value)]
-            items.append({"index": i, "name": name.value.decode("utf-8", "ignore"), "shape": shape, "format": fmt.value})
+            qf = c_int32(0)
+            scale, zp, fl = 1.0, 0, 0
+            if query(self.net, i, VIP_BUFFER_PROP_QUANT_FORMAT, ctypes.byref(qf)) == VIP_SUCCESS:
+                if qf.value == VIP_BUFFER_QUANTIZE_TF_ASYMM:
+                    aff = VipQuantAffine()
+                    if query(self.net, i, VIP_BUFFER_PROP_QUANT_DATA, ctypes.byref(aff)) == VIP_SUCCESS and aff.scale > 0:
+                        scale, zp = float(aff.scale), int(aff.zero_point)
+                elif qf.value == VIP_BUFFER_QUANTIZE_DYNAMIC_FIXED_POINT:
+                    pos = ctypes.c_uint8(0)
+                    if query(self.net, i, VIP_BUFFER_PROP_QUANT_DATA, ctypes.byref(pos)) == VIP_SUCCESS:
+                        fl = int(pos.value)
+            items.append(
+                {
+                    "index": i,
+                    "name": name.value.decode("utf-8", "ignore"),
+                    "shape": shape,
+                    "format": fmt.value,
+                    "quant_format": qf.value,
+                    "scale": scale,
+                    "zero_point": zp,
+                    "fl": fl,
+                }
+            )
         return items
 
     def _make_buffer(self, info: dict, index: int, is_input: bool) -> c_void_p:
@@ -210,9 +240,9 @@ class VipLite:
         for i, s in enumerate(info["shape"]):
             params.sizes[i] = s
         params.data_format = info["format"]
-        params.quant_format = 0
-        params.quant_scale = 1.0
-        params.quant_zero_point = 0
+        params.quant_format = int(info.get("quant_format", 0))
+        params.quant_scale = float(info.get("scale", 1.0))
+        params.quant_zero_point = int(info.get("zero_point", 0))
         params.memory_type = 0
         handle = c_void_p()
         _ok(self.lib.vip_create_buffer(ctypes.byref(params), ctypes.sizeof(params), ctypes.byref(handle)), "create_buffer")
@@ -239,7 +269,14 @@ class VipLite:
             n = int(np.prod(info["shape"]))
             nbytes = n * np.dtype(dtype).itemsize
             raw = ctypes.string_at(ptr, nbytes)
-            outs.append(np.frombuffer(raw, dtype=dtype, count=n).copy().reshape(info["shape"]))
+            arr = np.frombuffer(raw, dtype=dtype, count=n).astype(np.float32, copy=True)
+            qf = int(info.get("quant_format", 0))
+            if info["format"] != VIP_BUFFER_FORMAT_FP32:
+                if qf == VIP_BUFFER_QUANTIZE_DYNAMIC_FIXED_POINT:
+                    arr *= np.float32(2.0 ** (-int(info.get("fl", 0))))
+                elif qf == VIP_BUFFER_QUANTIZE_TF_ASYMM or info.get("scale", 1.0) != 1.0 or info.get("zero_point", 0):
+                    arr = (arr - np.float32(info.get("zero_point", 0))) * np.float32(info.get("scale", 1.0))
+            outs.append(arr.reshape(info["shape"]))
             self.lib.vip_unmap_buffer(buf)
         return outs
 
@@ -247,17 +284,30 @@ class VipLite:
         info = self.inputs[0]
         shape = [s for s in info["shape"] if s > 0]
         h, w = rgb.shape[:2]
-        if info["format"] == VIP_BUFFER_FORMAT_UINT8:
-            chw = np.transpose(rgb, (2, 0, 1))
+        nhwc = len(shape) >= 3 and shape[-1] == 3 and shape[0] != 3
+        fmt = info["format"]
+        scale = float(info.get("scale", 1.0))
+        zp = int(info.get("zero_point", 0))
+        qf = int(info.get("quant_format", 0))
+        if fmt == VIP_BUFFER_FORMAT_INT8 and qf == VIP_BUFFER_QUANTIZE_NONE and zp == 0 and abs(scale - 1.0) < 1e-6:
+            scale, zp = 1.0 / 255.0, -128
+
+        if fmt == VIP_BUFFER_FORMAT_INT8:
+            q = np.clip(np.rint(rgb.astype(np.float32) / 255.0 / scale + zp), -128, 127).astype(np.int8)
+            packed = q if nhwc else np.transpose(q, (2, 0, 1))
+        elif fmt == VIP_BUFFER_FORMAT_UINT8:
+            packed = rgb if nhwc else np.transpose(rgb, (2, 0, 1))
+        elif fmt == VIP_BUFFER_FORMAT_FP16:
+            f16 = (rgb.astype(np.float32) / 255.0).astype(np.float16)
+            packed = f16 if nhwc else np.transpose(f16, (2, 0, 1))
         else:
-            chw = np.transpose(rgb.astype(np.float32) / 255.0, (2, 0, 1))
-        # VIPLite on A733 often reports C H W N  (3,640,640,1)
-        if shape[:3] == [3, h, w] or (len(shape) >= 3 and shape[0] == 3):
-            packed = chw.reshape(shape)
-        elif shape[-3:] == [h, w, 3] or (len(shape) >= 3 and shape[-1] == 3):
-            packed = rgb.reshape(shape) if info["format"] == VIP_BUFFER_FORMAT_UINT8 else (rgb.astype(np.float32) / 255.0).reshape(shape)
-        else:
-            packed = chw.reshape(-1)
+            f32 = rgb.astype(np.float32) / 255.0
+            packed = f32 if nhwc else np.transpose(f32, (2, 0, 1))
+
+        try:
+            packed = packed.reshape(shape)
+        except ValueError:
+            packed = packed.reshape(-1)
         return np.ascontiguousarray(packed)
 
     def close(self) -> None:

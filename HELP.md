@@ -8,7 +8,7 @@ Board: Allwinner **A733**, Vivante **VIP9000** NPU (3 TOPS). This folder has two
 | **NPU** | [`Yolo26_NPU`](Yolo26_NPU) | ACUITY `*.nb` | VIPLite `/dev/vipcore` |
 
 ```
-PC:   yolo26n.pt ──export_npu.py──► yolo26n_6.onnx ──ACUITY──► yolo26n.nb
+PC:   yolo26n.pt ──export_npu.py──► yolo26n_6.onnx ──ACUITY──► yolo26n_fp16.nb
                                          │
                                          ├── Yolo26_ONNX (CPU, no VIPLite)
                                          └── Yolo26_NPU  (needs the .nb)
@@ -18,11 +18,11 @@ PC:   yolo26n.pt ──export_npu.py──► yolo26n_6.onnx ──ACUITY──�
 |---|---|---|
 | `export/yolo26n_6.onnx` | `yolo26_onnx`, `infer.py --backend onnx`, `convert_npu.sh` | `yolo26_npu` |
 | `export_onnx/yolo26n.onnx` (e2e 300×6) | `yolo26_onnx` only | `convert_npu.sh` / `yolo26_npu` |
-| `export_nb/yolo26n.nb` | `yolo26_npu`, `infer.py --backend npu` | `yolo26_onnx` |
+| `export_nb/yolo26n_fp16.nb` | `yolo26_npu`, `infer.py --backend npu` | `yolo26_onnx` |
 
 `.pt` / `.onnx` / `.nb` are gitignored. `git pull` on the board does **not** fetch weights. Copy `export/` and `export_nb/` with scp/USB.
 
-Prefer **yolo26n** on 1–2 GB boards. Start NPU with `yolo26n.nb` (~3 MB).
+Prefer **yolo26n** on 1–2 GB boards. Start NPU with `yolo26n_fp16.nb`.
 
 Repo: https://github.com/DevExpert0101/yolo26-orangepi3w
 
@@ -363,10 +363,10 @@ Expected CPU time, yolo26n @ 640: about **0.5–2 s / frame**. Use the NPU app f
 The NPU does **not** run `.pt` or a default YOLO26 ONNX. ACUITY `pegasus` compiles a **6-head** ONNX to an A733 `.nb`. This step is on a **PC / WSL**, never on the 3W.
 
 ```
-yolo26n.pt  ──export_npu.py──►  yolo26n_6.onnx  ──convert_npu.sh──►  yolo26n.nb
+yolo26n.pt  ──export_npu.py──►  yolo26n_6.onnx  ──convert_npu.sh──►  yolo26n_fp16.nb
 ```
 
-Quantization is **pcq** (per-channel INT8). Target:
+Default compile is **FP16** (`--quant fp16`). ACUITY `--dtype float` becomes an FP16 NBG on VIP9000 (no FP32 MACs). INT8 is still available with `--quant pcq`. Target:
 
 ```
 VIP9000NANODI_PLUS_PID0X1000003B
@@ -379,8 +379,9 @@ This tree may already contain:
 | `export/yolo26n_6.onnx` | 6-head graph (also runs on ONNX CPU) |
 | `export/yolo26n_6_inputmeta.yml` | NCHW input meta for ACUITY |
 | `export/dataset.txt` + `export/calib/` | quantization images |
-| `export_nb/yolo26n.nb` | compiled NBG (copy to the board) |
-| `export_nb/wksp/yolo26n_6_pcq_nbg_unify/network_binary.nb` | same graph |
+| `export_nb/yolo26n_fp16.nb` | FP16 NBG (preferred) |
+| `export_nb/yolo26n.nb` | INT8 PCQ NBG |
+| `export/yolo26n_6_fp16_a733.nb` | same FP16 graph from convert |
 
 ## 3.1 Export 6-head ONNX (PC)
 
@@ -439,7 +440,8 @@ export ACUITY_PATH=$HOME/acuity-toolkit-whl-6.30.22/bin
 export VIV_SDK=$HOME/Vivante_IDE/VivanteIDE5.11.0/cmdtools
 export PATH=$ACUITY_PATH:$PATH
 
-./convert_npu.sh --onnx export/yolo26n_6.onnx
+./convert_npu.sh --onnx export/yolo26n_6.onnx                 # FP16 (default)
+# ./convert_npu.sh --onnx export/yolo26n_6.onnx --quant pcq    # INT8
 # ./convert_npu.sh --onnx export/yolo26n_6.onnx --native
 # ./convert_npu.sh --onnx export/yolo26n_6.onnx --zoo /path/to/awnpu_model_zoo
 ```
@@ -449,7 +451,7 @@ export PATH=$ACUITY_PATH:$PATH
 | `--onnx PATH` | 6-head ONNX from `export_npu.py` |
 | `--name NAME` | stem (default: ONNX filename) |
 | `--imgsz N` | default from `NAME.json` or 640 |
-| `--quant TYPE` | default `pcq` |
+| `--quant TYPE` | `fp16` (default) or `pcq` |
 | `--native` | host `pegasus` (implied if on `PATH`) |
 | `--docker` | `ubuntu-npu:v2.0.10.2` (optional) |
 | `--sdk DIR` | `linux_aw_npu` tree |
@@ -460,21 +462,23 @@ export NPU_DOCKER_IMAGE=ubuntu-npu:v2.0.10.2
 ./convert_npu.sh --docker --onnx export/yolo26n_6.onnx
 ```
 
-Success looks like `export/yolo26n_6_pcq_a733.nb`, `export_nb/yolo26n.nb`, or `export*/wksp/**/network_binary.nb`.
+Success looks like `export/yolo26n_6_fp16_a733.nb` and `export_nb/yolo26n_fp16.nb`. INT8 names use `pcq` instead of `fp16`.
+
+FP16 skips calibration and usually matches ONNX boxes much closer than INT8. It is larger and a bit slower than PCQ (VIP9000 peak TOPS is INT8).
 
 ## 3.4 Copy to the board
 
 `.nb` is not in git.
 
 ```powershell
-scp D:\1\work\orangePi\yolo26-orangepi3w\export_nb\yolo26n.nb `
+scp D:\1\work\orangePi\yolo26-orangepi3w\export_nb\yolo26n_fp16.nb `
   orangepi@<board-ip>:~/Documents/yolo26-orangepi3w/export_nb/
 ```
 
 Also copy a test image if needed: `export/calib/bus.jpg`.
 
 ```bash
-ls -lh ~/Documents/yolo26-orangepi3w/export_nb/yolo26n.nb
+ls -lh ~/Documents/yolo26-orangepi3w/export_nb/yolo26n_fp16.nb
 ```
 
 ---
@@ -532,8 +536,8 @@ cd ~/Documents/yolo26-orangepi3w
 chmod +x run_npu.sh bench_npu.sh
 
 ./run_npu.sh
-./run_npu.sh export_nb/yolo26n.nb export/calib/bus.jpg
-./run_npu.sh export_nb/wksp/yolo26n_6_pcq_nbg_unify/network_binary.nb export/calib/bus.jpg
+./run_npu.sh export_nb/yolo26n_fp16.nb export/calib/bus.jpg
+./run_npu.sh export_nb/wksp/yolo26n_6_fp16_nbg_unify/network_binary.nb export/calib/bus.jpg
 ```
 
 Or the binary (SSH: always `--no-show`):
@@ -542,10 +546,10 @@ Or the binary (SSH: always `--no-show`):
 cd Yolo26_NPU/build
 export LD_LIBRARY_PATH=../lib:/usr/lib:$LD_LIBRARY_PATH
 
-./yolo26_npu ../../export_nb/yolo26n.nb ../../export/calib/bus.jpg --no-show --save ../../result_npu.jpg
-./yolo26_npu ../../export_nb/yolo26n.nb ../../export/calib/bus.jpg
-./yolo26_npu ../../export_nb/yolo26n.nb 0
-./yolo26_npu ../../export_nb/yolo26n.nb clip.mp4 --save out.mp4 --no-show
+./yolo26_npu ../../export_nb/yolo26n_fp16.nb ../../export/calib/bus.jpg --no-show --save ../../result_npu.jpg
+./yolo26_npu ../../export_nb/yolo26n_fp16.nb ../../export/calib/bus.jpg
+./yolo26_npu ../../export_nb/yolo26n_fp16.nb 0
+./yolo26_npu ../../export_nb/yolo26n_fp16.nb clip.mp4 --save out.mp4 --no-show
 ```
 
 | Flag | Default | Meaning |
@@ -564,10 +568,12 @@ Python:
 ```bash
 ./setup_board.sh --python
 source .venv/bin/activate
-python infer.py --backend npu --model export_nb/yolo26n.nb --source export/calib/bus.jpg
+python infer.py --backend npu --model export_nb/yolo26n_fp16.nb --source export/calib/bus.jpg
 ```
 
-If boxes look scrambled: `python infer.py --backend npu --layout hwc ...`. The C++ decoder assumes A733 **CHW** output.
+PCQ `.nb` files are INT8. The app now writes `pixel-128` on INT8 inputs and dequants outputs with `(q - zp) * scale`. Rebuild after `git pull` or boxes stay wrong.
+
+If boxes still look scrambled (layout): `python infer.py --backend npu --layout hwc ...`. The C++ decoder assumes A733 **CHW** output.
 
 Do not pass `yolo26n_6.onnx` to `yolo26_npu`.
 
@@ -596,7 +602,7 @@ cd Yolo26_ONNX && ./build.sh && cd ..
 cd Yolo26_NPU  && ./build.sh && cd ..
 
 ./bench_onnx.sh export/yolo26n_6.onnx export/calib/bus.jpg --loop 30
-./bench_npu.sh  export_nb/yolo26n.nb     export/calib/bus.jpg --loop 30
+./bench_npu.sh  export_nb/yolo26n_fp16.nb export/calib/bus.jpg --loop 30
 ```
 
 Example NPU summary:
@@ -632,7 +638,8 @@ end-to-end  avg ...  min ...  max ... ms   (... FPS)
 | ACUITY fails on ONNX | You exported e2e. Use `export_npu.py` (`*_6.onnx`) |
 | Missing `.nb` after `git pull` | Files are gitignored — scp from the PC ([3.4](#34-copy-to-the-board)) |
 | `yolo26_npu` given an `.onnx` | Convert first ([3](#3-convert-models-to-npu)) |
-| No detections / huge boxes | `--imgsz` must match export. Python: try `--layout hwc` |
+| NPU boxes in the wrong place / huge / garbage classes | Rebuild after `git pull`. INT8 `.nb` needs input `pixel-128` and output dequant. Check load log for `quant=asymm scale=... zp=...` |
+| No detections / huge boxes (layout) | `--imgsz` must match export. Python: try `--layout hwc` |
 | OpenCV window fails over SSH | `--no-show --save result.jpg` |
 | Board OOM compiling | `--swap`, `cmake --build . -j1` |
 | Board OOM running ONNX | `--threads 2`, `yolo26n` only |
@@ -653,8 +660,8 @@ end-to-end  avg ...  min ...  max ... ms   (... FPS)
 **NPU**
 
 1. PC: `python export_npu.py --model yolo26n.pt --outdir export`
-2. Linux/WSL: `./convert_npu.sh --onnx export/yolo26n_6.onnx`
+2. Linux/WSL: `./convert_npu.sh --onnx export/yolo26n_6.onnx` (FP16). INT8: add `--quant pcq`
 3. scp `*.nb` to the board (`export_nb/` is not in git)
 4. Board: `./setup_board.sh` then `cd Yolo26_NPU && ./build.sh`
-5. `./run_npu.sh export_nb/yolo26n.nb export/calib/bus.jpg`
+5. `./run_npu.sh export_nb/yolo26n_fp16.nb export/calib/bus.jpg`
 6. Time: `./bench_npu.sh`

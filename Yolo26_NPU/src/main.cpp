@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
             const auto t0 = clock::now();
             cv::cvtColor(frame, rgb, cv::COLOR_BGR2RGB);
             const LetterboxInfo lb = letterbox(rgb, letter, imgsz);
-            pack_nchw_uint8(letter, packed);
+            engine.pack_rgb(letter, packed);
             const auto t1 = clock::now();
             if (!engine.infer(packed.data(), packed.size())) {
                 std::fprintf(stderr, "NPU infer failed\n");

@@ -86,15 +86,29 @@ fi
 META=""
 [[ -f "${NAME}_inputmeta.yml" ]] && META="--with-input-meta ${NAME}_inputmeta.yml"
 
+case "${QUANT}" in
+  fp16|float16|float) QUANT="fp16" ;;
+  pcq|int8) QUANT="pcq" ;;
+esac
+
 QUANTIZER="asymmetric_affine"
 QTYPE="${QUANT}"
+DTYPE="quantized"
+OUT_STEM="${NAME}_${QUANT}"
 if [[ "${QUANT}" == "pcq" ]]; then
   QUANTIZER="perchannel_symmetric_affine"
   QTYPE="int8"
+elif [[ "${QUANT}" == "fp16" ]]; then
+  # VIP9000 has no FP32 MACs. ACUITY --dtype float packs an FP16 NBG (zoo: wksp/NAME_fp16).
+  DTYPE="float"
+  OUT_STEM="${NAME}_fp16"
+  QTYPE=""
 fi
 ITERS="${BITS:-12}"
 
-if [[ -f "${NAME}_${QUANT}.quantize" ]]; then
+if [[ "${QUANT}" == "fp16" ]]; then
+  echo "Skipping pegasus quantize (FP16 / --dtype float). No INT8 calibration."
+elif [[ -f "${NAME}_${QUANT}.quantize" ]]; then
   echo "Reusing ${NAME}_${QUANT}.quantize"
 else
   # shellcheck disable=SC2086
@@ -113,26 +127,39 @@ fi
 mkdir -p wksp
 if ! command -v gcc >/dev/null 2>&1; then
   echo "NBG pack needs a host gcc (the image gcc cannot link against Ubuntu 22.04)."
-  echo "Quantize already saved ${NAME}_${QUANT}.quantize. Install a compiler, then re-run convert:"
+  echo "Install a compiler, then re-run convert:"
   echo "  sudo apt-get update && sudo apt-get install -y build-essential"
-  echo "  bash ./convert_npu.sh --image-tar ../linux_aw_npu/docker/ubuntu-npu_v2.0.10.2.tar --onnx export/${NAME}.onnx"
+  echo "  bash ./convert_npu.sh --image-tar ../linux_aw_npu/docker/ubuntu-npu_v2.0.10.2.tar --onnx export/${NAME}.onnx --quant ${QUANT}"
   exit 1
 fi
 export EXTRALFLAGS="${EXTRALFLAGS:-} -lNNArchPerf -lArchModelSw -ldl -lpthread -lrt"
 POST=""
 [[ -f "${NAME}_postprocess_file.yml" ]] && POST="--postprocess-file ${NAME}_postprocess_file.yml"
 # shellcheck disable=SC2086
-pegasus_run export ovxlib \
-  --model "${NAME}.json" \
-  --model-data "${NAME}.data" \
-  --dtype quantized \
-  --model-quantize "${NAME}_${QUANT}.quantize" \
-  --target-ide-project linux64 \
-  --optimize "${OPTIMIZE}" \
-  --viv-sdk "${VIV_SDK}" \
-  --pack-nbg-unify \
-  --output-path "./wksp/${NAME}_${QUANT}/${NAME}_${QUANT}" \
-  ${META} ${POST}
+if [[ "${DTYPE}" == "float" ]]; then
+  pegasus_run export ovxlib \
+    --model "${NAME}.json" \
+    --model-data "${NAME}.data" \
+    --dtype float \
+    --target-ide-project linux64 \
+    --optimize "${OPTIMIZE}" \
+    --viv-sdk "${VIV_SDK}" \
+    --pack-nbg-unify \
+    --output-path "./wksp/${OUT_STEM}/${OUT_STEM}" \
+    ${META} ${POST}
+else
+  pegasus_run export ovxlib \
+    --model "${NAME}.json" \
+    --model-data "${NAME}.data" \
+    --dtype quantized \
+    --model-quantize "${NAME}_${QUANT}.quantize" \
+    --target-ide-project linux64 \
+    --optimize "${OPTIMIZE}" \
+    --viv-sdk "${VIV_SDK}" \
+    --pack-nbg-unify \
+    --output-path "./wksp/${OUT_STEM}/${OUT_STEM}" \
+    ${META} ${POST}
+fi
 
 # --pack-nbg-unify always writes network_binary.nb. Zoo renames it to NAME_pcq_a733.nb.
 NB_OUT="${NAME}_${QUANT}_a733.nb"

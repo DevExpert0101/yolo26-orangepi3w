@@ -16,4 +16,4 @@ cmake .. \
 cmake --build . -j"$(nproc)"
 echo
 echo "Run:"
-echo "  ./yolo26_npu /path/to/yolo26n_6_pcq_a733.nb /path/to/bus.jpg --no-show --save result.jpg"
+echo "  ./yolo26_npu /path/to/yolo26n_6_fp16_a733.nb /path/to/bus.jpg --no-show --save result.jpg"

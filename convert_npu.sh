@@ -6,7 +6,8 @@
 #   python export_npu.py --model yolo26n.pt --outdir export
 #   export ACUITY_PATH=$HOME/acuity-toolkit-whl-6.30.22/bin
 #   export VIV_SDK=$HOME/Vivante_IDE/VivanteIDE5.11.0/cmdtools
-#   ./convert_npu.sh --onnx export/yolo26n_6.onnx
+#   ./convert_npu.sh --onnx export/yolo26n_6.onnx              # FP16 (default)
+#   ./convert_npu.sh --onnx export/yolo26n_6.onnx --quant pcq  # INT8
 #
 # Docker is optional:  ./convert_npu.sh --docker --onnx export/yolo26n_6.onnx
 set -euo pipefail
@@ -20,7 +21,7 @@ fi
 IMAGE="${NPU_DOCKER_IMAGE:-ubuntu-npu:v2.0.10.2}"
 ONNX=""
 NAME=""
-QUANT="${NPU_QUANT:-pcq}"
+QUANT="${NPU_QUANT:-fp16}"
 BITS="${NPU_QUANT_BITS:-12}"
 OPTIMIZE="VIP9000NANODI_PLUS_PID0X1000003B"
 ZOO=""
@@ -37,7 +38,7 @@ Usage: $0 --onnx PATH [options]
   --onnx PATH     6-head ONNX from export_npu.py
   --name NAME     stem (default: ONNX filename without .onnx)
   --imgsz N       input size (default: read from NAME.json, else 640)
-  --quant TYPE    ACUITY qtype (default: pcq)
+  --quant TYPE    fp16 (default, no INT8) | pcq | uint8 | int16
   --native        use host pegasus (no Docker)
   --docker        use ${IMAGE}
   --image NAME    Docker image if --docker
@@ -79,6 +80,12 @@ if [[ -z "${IMGSZ}" && -f "${WORKDIR}/${NAME}.json" ]] && command -v python3 >/d
   IMGSZ="$(python3 -c "import json; print(json.load(open('${WORKDIR}/${NAME}.json')).get('imgsz', 640))" 2>/dev/null || true)"
 fi
 IMGSZ="${IMGSZ:-640}"
+case "${QUANT}" in
+  fp16|float16|float) QUANT="fp16" ;;
+  pcq|int8) QUANT="pcq" ;;
+esac
+ZOO_QUANT="${QUANT}"
+[[ "${QUANT}" == "fp16" ]] && ZOO_QUANT="float"
 
 pegasus_exists() {
   local p="$1"
@@ -292,8 +299,10 @@ run_zoo_native() {
     cd "${convert}"
     ./convert_model_env.sh || true
     ./pegasus_import.sh "${NAME}"
-    ./pegasus_quantize.sh "${NAME}" "${QUANT}" "${BITS}"
-    ./pegasus_export_ovx_nbg.sh "${NAME}" "${QUANT}" a733
+    if [[ "${ZOO_QUANT}" != "float" ]]; then
+      ./pegasus_quantize.sh "${NAME}" "${ZOO_QUANT}" "${BITS}"
+    fi
+    ./pegasus_export_ovx_nbg.sh "${NAME}" "${ZOO_QUANT}" a733
   )
   find "${ZOO}" -name "*${NAME}*a733*.nb" -exec cp -f {} "${WORKDIR}/" \;
   return 0
@@ -337,9 +346,16 @@ else
     bash -lc "cd ${INNER} && bash /workspace/run_pegasus.sh '${NAME}' '${QUANT}' '${BITS}' '${OPTIMIZE}' '${IMGSZ}'"
 fi
 
+NB_FILE="${WORKDIR}/${NAME}_${QUANT}_a733.nb"
+if [[ -f "${NB_FILE}" ]]; then
+  mkdir -p "${ROOT}/export_nb"
+  short="${NAME%_6}"
+  cp -f "${NB_FILE}" "${ROOT}/export_nb/${short}_${QUANT}.nb"
+  echo "Also copied ${ROOT}/export_nb/${short}_${QUANT}.nb"
+fi
 echo
 echo "If conversion succeeded, copy this file to the Orange Pi:"
-echo "  ${WORKDIR}/${NAME}_${QUANT}_a733.nb"
+echo "  ${NB_FILE}"
 echo "ACUITY's pack name is network_binary.nb; convert_npu.sh renames it."
-echo "  ./Yolo26_NPU/build/yolo26_npu ${WORKDIR}/${NAME}_${QUANT}_a733.nb export/calib/bus.jpg --no-show --save result.jpg"
-ls -l "${WORKDIR}/${NAME}_${QUANT}_a733.nb" "${WORKDIR}"/*.nb 2>/dev/null || true
+echo "  ./Yolo26_NPU/build/yolo26_npu ${NB_FILE} export/calib/bus.jpg --no-show --save result.jpg"
+ls -l "${NB_FILE}" "${WORKDIR}"/*.nb 2>/dev/null || true

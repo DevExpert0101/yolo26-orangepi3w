@@ -29,6 +29,10 @@ fi
 
 if [[ -z "${MODEL}" ]]; then
   MODEL="$(pick_first \
+    "${ROOT}/export_nb/yolo26n_fp16.nb" \
+    "${ROOT}/export/yolo26n_6_fp16_a733.nb" \
+    "${ROOT}/export_nb/wksp/yolo26n_6_fp16_nbg_unify/network_binary.nb" \
+    "${ROOT}/export/wksp/yolo26n_6_fp16_nbg_unify/network_binary.nb" \
     "${ROOT}/export_nb/yolo26n.nb" \
     "${ROOT}/export_nb/wksp/yolo26n_6_pcq_nbg_unify/network_binary.nb" \
     "${ROOT}/export/yolo26n_6_pcq_a733.nb" \
