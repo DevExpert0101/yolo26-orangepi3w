@@ -283,9 +283,10 @@ class VipLite:
     def _pack_input(self, rgb: np.ndarray) -> np.ndarray:
         info = self.inputs[0]
         shape = [s for s in info["shape"] if s > 0]
-        h, w = rgb.shape[:2]
-        nhwc = len(shape) >= 3 and shape[-1] == 3 and shape[0] != 3
         fmt = info["format"]
+        last_is_c = len(shape) >= 3 and shape[-1] == 3
+        whcn = len(shape) >= 4 and shape[2] == 3 and shape[0] != 3 and shape[1] != 3
+        nhwc = last_is_c or whcn or fmt == VIP_BUFFER_FORMAT_UINT8
         scale = float(info.get("scale", 1.0))
         zp = int(info.get("zero_point", 0))
         qf = int(info.get("quant_format", 0))
@@ -296,7 +297,7 @@ class VipLite:
             q = np.clip(np.rint(rgb.astype(np.float32) / 255.0 / scale + zp), -128, 127).astype(np.int8)
             packed = q if nhwc else np.transpose(q, (2, 0, 1))
         elif fmt == VIP_BUFFER_FORMAT_UINT8:
-            packed = rgb if nhwc else np.transpose(rgb, (2, 0, 1))
+            packed = np.ascontiguousarray(rgb)
         elif fmt == VIP_BUFFER_FORMAT_FP16:
             f16 = (rgb.astype(np.float32) / 255.0).astype(np.float16)
             packed = f16 if nhwc else np.transpose(f16, (2, 0, 1))
@@ -335,7 +336,14 @@ def decode_yolo26_6(
     layout: str = "chw",
     nms_fn=None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Decode 6 raw heads. layout='chw' is required on A733 VIPLite (Frigate/Radxa)."""
+    """Decode 6 raw heads.
+
+    VIPLite reports [H,W,C,1] but the buffer is CHW. Do not reshape from
+    query sizes. See https://github.com/blakeblackshear/frigate/discussions/23418
+    """
+    if layout == "auto":
+        layout = "chw"
+
     flat = [_squeeze(o) for o in outputs]
     boxes_l, scores_l = _split_heads(flat, nc, imgsz, strides)
     all_boxes, all_scores = [], []
@@ -344,7 +352,12 @@ def decode_yolo26_6(
         box = _to_chw(box, 4, h, w, layout)
         score = _to_chw(score, nc, h, w, layout)
         box = box.reshape(4, -1)
-        score = 1.0 / (1.0 + np.exp(-score.reshape(nc, -1)))
+        raw = score.reshape(nc, -1)
+        already_prob = float(raw.min()) >= -0.02 and float(raw.max()) <= 1.02
+        if already_prob:
+            score = raw
+        else:
+            score = 1.0 / (1.0 + np.exp(-np.clip(raw, -16.0, 16.0)))
         gy, gx = np.meshgrid(np.arange(h), np.arange(w), indexing="ij")
         anchors = np.stack([(gx.reshape(-1) + 0.5), (gy.reshape(-1) + 0.5)], 0)
         lt, rb = box[:2], box[2:]
@@ -391,15 +404,13 @@ def _split_heads(outs: list[np.ndarray], nc: int, imgsz: int, strides: tuple[int
 
 
 def _to_chw(arr: np.ndarray, c: int, h: int, w: int, layout: str) -> np.ndarray:
-    if arr.shape == (c, h, w):
-        return arr
-    if arr.shape == (h, w, c):
-        return np.transpose(arr, (2, 0, 1))
-    if arr.size != c * h * w:
-        raise RuntimeError(f"bad head shape {arr.shape} expected {c}x{h}x{w}")
+    # Flatten first. vip_query_output sizes [H,W,C,1] are not the memory order.
+    flat = np.ascontiguousarray(arr).reshape(-1)
+    if flat.size != c * h * w:
+        raise RuntimeError(f"bad head size {flat.size} expected {c}x{h}x{w}")
     if layout == "hwc":
-        return np.transpose(arr.reshape(h, w, c), (2, 0, 1))
-    return arr.reshape(c, h, w)
+        return np.transpose(flat.reshape(h, w, c), (2, 0, 1))
+    return flat.reshape(c, h, w)
 
 
 def probe() -> int:

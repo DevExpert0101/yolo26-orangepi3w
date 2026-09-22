@@ -66,6 +66,7 @@ private:
 LetterboxInfo letterbox(const cv::Mat &src, cv::Mat &dst, int imgsz);
 void pack_nchw_uint8(const cv::Mat &rgb, std::vector<uint8_t> &dst);
 void decode_yolo26_6(const VipEngine &engine, const LetterboxInfo &lb, const cv::Size &orig,
-                     float conf, float nms, int nc, std::vector<Detection> &dets);
+                     float conf, float nms, int nc, std::vector<Detection> &dets,
+                     const char *layout = "chw");
 void draw_detections(cv::Mat &image, const std::vector<Detection> &dets);
 const char *coco_name(int id);

@@ -372,12 +372,14 @@ Default compile is **FP16** (`--quant fp16`). ACUITY `--dtype float` becomes an 
 VIP9000NANODI_PLUS_PID0X1000003B
 ```
 
-This tree may already contain:
+Convert follows the Allwinner yolo11 zoo and the working A733 path in [Frigate #23418](https://github.com/blakeblackshear/frigate/discussions/23418) / [CONVERSION.md](https://github.com/unnamedwild-ux/frigate_npu_vivante/blob/master/CONVERSION.md): `pegasus import onnx` → `generate inputmeta` + `generate postprocess-file` → `IMAGE_RGB` preproc (HWC uint8 0–255) and float32 outputs. Decode the 6 heads as **CHW** even though `vip_query_output` prints HWC. Older scripts left `add_preproc_node: false` and skipped postprocess, which produced garbage boxes. **Reconvert** after this fix; delete leftover `export/*.json` (except `*_npu.json`), `export/*.data`, `export/*.quantize`, and `export/wksp/` if convert is not doing a clean import.
 
 | On the PC | Role |
 |---|---|
 | `export/yolo26n_6.onnx` | 6-head graph (also runs on ONNX CPU) |
-| `export/yolo26n_6_inputmeta.yml` | NCHW input meta for ACUITY |
+| `export/yolo26n_6_inputmeta.yml` | ACUITY input meta (`IMAGE_RGB`, `add_preproc_node: true`, scale 1/255) |
+| `export/yolo26n_6_postprocess_file.yml` | ACUITY postproc (`add_postproc_node: true` → float32 outputs) |
+| `export/yolo26n_6_npu.json` | imgsz / class count sidecar from `export_npu.py` (not the ACUITY graph) |
 | `export/dataset.txt` + `export/calib/` | quantization images |
 | `export_nb/yolo26n_fp16.nb` | FP16 NBG (preferred) |
 | `export_nb/yolo26n.nb` | INT8 PCQ NBG |
@@ -450,7 +452,7 @@ export PATH=$ACUITY_PATH:$PATH
 |---|---|
 | `--onnx PATH` | 6-head ONNX from `export_npu.py` |
 | `--name NAME` | stem (default: ONNX filename) |
-| `--imgsz N` | default from `NAME.json` or 640 |
+| `--imgsz N` | default from `NAME_npu.json` or 640 |
 | `--quant TYPE` | `fp16` (default) or `pcq` |
 | `--native` | host `pegasus` (implied if on `PATH`) |
 | `--docker` | `ubuntu-npu:v2.0.10.2` (optional) |
@@ -464,7 +466,11 @@ export NPU_DOCKER_IMAGE=ubuntu-npu:v2.0.10.2
 
 Success looks like `export/yolo26n_6_fp16_a733.nb` and `export_nb/yolo26n_fp16.nb`. INT8 names use `pcq` instead of `fp16`.
 
-FP16 skips calibration and usually matches ONNX boxes much closer than INT8. It is larger and a bit slower than PCQ (VIP9000 peak TOPS is INT8).
+After convert, `export/yolo26n_6_inputmeta.yml` must contain `add_preproc_node: true` and `preproc_type: IMAGE_RGB`. If it still says `false`, convert did not patch meta — do not use that `.nb`.
+
+The NPU app writes **HWC uint8 0–255** into the NBG (same as `yolo11_6_pre.cpp`). Rebuild `yolo26_npu` on the board after `git pull`.
+
+FP16 skips INT8 calibration and usually matches ONNX boxes much closer than PCQ. It is larger and a bit slower than PCQ (VIP9000 peak TOPS is INT8).
 
 ## 3.4 Copy to the board
 
@@ -571,9 +577,9 @@ source .venv/bin/activate
 python infer.py --backend npu --model export_nb/yolo26n_fp16.nb --source export/calib/bus.jpg
 ```
 
-PCQ `.nb` files are INT8. The app now writes `pixel-128` on INT8 inputs and dequants outputs with `(q - zp) * scale`. Rebuild after `git pull` or boxes stay wrong.
+PCQ `.nb` files are INT8. The app writes `pixel-128` on INT8 inputs and dequants outputs with `(q - zp) * scale`.
 
-If boxes still look scrambled (layout): `python infer.py --backend npu --layout hwc ...`. The C++ decoder assumes A733 **CHW** output.
+VIPLite **reports** output sizes as `[H,W,C,1]` but the buffer is **CHW**. Reading them as HWC labels a car as person with a full-frame box ([Frigate discussion #23418](https://github.com/blakeblackshear/frigate/discussions/23418)). Decode defaults to CHW. `--layout hwc` is only a debug override.
 
 Do not pass `yolo26n_6.onnx` to `yolo26_npu`.
 
@@ -638,8 +644,9 @@ end-to-end  avg ...  min ...  max ... ms   (... FPS)
 | ACUITY fails on ONNX | You exported e2e. Use `export_npu.py` (`*_6.onnx`) |
 | Missing `.nb` after `git pull` | Files are gitignored — scp from the PC ([3.4](#34-copy-to-the-board)) |
 | `yolo26_npu` given an `.onnx` | Convert first ([3](#3-convert-models-to-npu)) |
-| NPU boxes in the wrong place / huge / garbage classes | Rebuild after `git pull`. INT8 `.nb` needs input `pixel-128` and output dequant. Check load log for `quant=asymm scale=... zp=...` |
-| No detections / huge boxes (layout) | `--imgsz` must match export. Python: try `--layout hwc` |
+| NPU boxes in the wrong place / huge / garbage classes / thousands of boxes | **Reconvert** (old NBGs had `add_preproc_node: false`). `git pull` and rebuild `yolo26_npu`. Prefer FP16. Check `add_preproc_node: true` / `IMAGE_RGB`. |
+| Car labeled as person / boat, near-full-frame box | VIPLite output is CHW, not the reported HWC ([#23418](https://github.com/blakeblackshear/frigate/discussions/23418)). Rebuild; do not pass `--layout hwc`. |
+| No detections / huge boxes (imgsz) | `--imgsz` must match export (640) |
 | OpenCV window fails over SSH | `--no-show --save result.jpg` |
 | Board OOM compiling | `--swap`, `cmake --build . -j1` |
 | Board OOM running ONNX | `--threads 2`, `yolo26n` only |
@@ -660,7 +667,7 @@ end-to-end  avg ...  min ...  max ... ms   (... FPS)
 **NPU**
 
 1. PC: `python export_npu.py --model yolo26n.pt --outdir export`
-2. Linux/WSL: `./convert_npu.sh --onnx export/yolo26n_6.onnx` (FP16). INT8: add `--quant pcq`
+2. Linux/WSL: `./convert_npu.sh --onnx export/yolo26n_6.onnx` (FP16). INT8: add `--quant pcq`. Confirm `add_preproc_node: true` in the generated inputmeta. **Do not keep an old `.nb`.**
 3. scp `*.nb` to the board (`export_nb/` is not in git)
 4. Board: `./setup_board.sh` then `cd Yolo26_NPU && ./build.sh`
 5. `./run_npu.sh export_nb/yolo26n_fp16.nb export/calib/bus.jpg`

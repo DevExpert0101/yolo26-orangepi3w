@@ -216,6 +216,10 @@ bool VipEngine::query_io() {
     };
     fill(true, in_n, inputs_);
     fill(false, out_n, outputs_);
+    if (!inputs_.empty() && inputs_[0].format == VIP_BUFFER_FORMAT_UINT8) {
+        std::printf("input pack: IMAGE_RGB HWC uint8 0-255 (NPU applies /255)\n");
+    }
+    std::printf("output memory is CHW even if sizes look like HWC (Frigate #23418)\n");
     host_out_.assign(outputs_.size(), {});
     return true;
 }
@@ -297,7 +301,11 @@ void VipEngine::pack_rgb(const cv::Mat &rgb, std::vector<uint8_t> &dst) const {
     const int h = rgb.rows;
     const int w = rgb.cols;
     const size_t hw = static_cast<size_t>(h) * static_cast<size_t>(w);
-    const bool nhwc = in.dims >= 3 && in.sizes[in.dims - 1] == 3 && in.sizes[0] != 3;
+    // IMAGE_RGB (Allwinner yolo11): HWC uint8 0-255. VIPLite may report WHCN
+    // [W,H,3,N] so the last dim is 1, not 3.
+    const bool last_is_c = in.dims >= 3 && in.sizes[in.dims - 1] == 3;
+    const bool whcn = in.dims >= 4 && in.sizes[2] == 3 && in.sizes[0] != 3 && in.sizes[1] != 3;
+    const bool nhwc = last_is_c || whcn || in.format == VIP_BUFFER_FORMAT_UINT8;
 
     float scale = in.scale > 0.f ? in.scale : (1.f / 255.f);
     int zp = in.zero_point;
@@ -376,9 +384,10 @@ void VipEngine::pack_rgb(const cv::Mat &rgb, std::vector<uint8_t> &dst) const {
         return;
     }
 
-    // UINT8 (and anything else 1-byte): raw 0-255 RGB.
+    // UINT8 IMAGE_RGB: raw interleaved 0-255, same as yolo11_6_pre.cpp.
     if (nhwc) {
-        std::memcpy(dst.data(), rgb.data, std::min(dst.size(), hw * 3));
+        const cv::Mat cont = rgb.isContinuous() ? rgb : rgb.clone();
+        std::memcpy(dst.data(), cont.data, std::min(dst.size(), hw * 3));
     } else {
         pack_nchw_uint8(rgb, dst);
         if (dst.size() < in.bytes) {

@@ -37,8 +37,8 @@ Usage: $0 --onnx PATH [options]
 
   --onnx PATH     6-head ONNX from export_npu.py
   --name NAME     stem (default: ONNX filename without .onnx)
-  --imgsz N       input size (default: read from NAME.json, else 640)
-  --quant TYPE    fp16 (default, no INT8) | pcq | uint8 | int16
+  --imgsz N       input size (default: NAME_npu.json, else 640)
+  --quant TYPE    fp16 (default, no INT8) | pcq | int16 | uint8
   --native        use host pegasus (no Docker)
   --docker        use ${IMAGE}
   --image NAME    Docker image if --docker
@@ -76,13 +76,19 @@ WORKDIR="$(dirname "${ONNX}")"
 RUNNER="${ROOT}/run_pegasus.sh"
 # /mnt/d is NTFS: chmod +x often fails in WSL. Always invoke with bash.
 
-if [[ -z "${IMGSZ}" && -f "${WORKDIR}/${NAME}.json" ]] && command -v python3 >/dev/null 2>&1; then
-  IMGSZ="$(python3 -c "import json; print(json.load(open('${WORKDIR}/${NAME}.json')).get('imgsz', 640))" 2>/dev/null || true)"
+if [[ -z "${IMGSZ}" ]] && command -v python3 >/dev/null 2>&1; then
+  for jf in "${WORKDIR}/${NAME}_npu.json" "${WORKDIR}/${NAME}.json"; do
+    if [[ -f "${jf}" ]]; then
+      IMGSZ="$(python3 -c "import json; print(json.load(open('${jf}')).get('imgsz', ''))" 2>/dev/null || true)"
+      [[ -n "${IMGSZ}" ]] && break
+    fi
+  done
 fi
 IMGSZ="${IMGSZ:-640}"
 case "${QUANT}" in
   fp16|float16|float) QUANT="fp16" ;;
   pcq|int8) QUANT="pcq" ;;
+  int16) QUANT="int16" ;;
 esac
 ZOO_QUANT="${QUANT}"
 [[ "${QUANT}" == "fp16" ]] && ZOO_QUANT="float"
@@ -341,6 +347,8 @@ else
   docker run --rm --ipc=host \
     -v "${WORKDIR}:${INNER}" \
     -v "${RUNNER}:/workspace/run_pegasus.sh:ro" \
+    -v "${ROOT}/patch_inputmeta.py:/workspace/patch_inputmeta.py:ro" \
+    -v "${ROOT}/prepare_onnx_acuity.py:/workspace/prepare_onnx_acuity.py:ro" \
     "${ZOO_MOUNT[@]}" \
     "${IMAGE}" \
     bash -lc "cd ${INNER} && bash /workspace/run_pegasus.sh '${NAME}' '${QUANT}' '${BITS}' '${OPTIMIZE}' '${IMGSZ}'"
@@ -350,8 +358,21 @@ NB_FILE="${WORKDIR}/${NAME}_${QUANT}_a733.nb"
 if [[ -f "${NB_FILE}" ]]; then
   mkdir -p "${ROOT}/export_nb"
   short="${NAME%_6}"
-  cp -f "${NB_FILE}" "${ROOT}/export_nb/${short}_${QUANT}.nb"
-  echo "Also copied ${ROOT}/export_nb/${short}_${QUANT}.nb"
+  dest="${ROOT}/export_nb/${short}_${QUANT}.nb"
+  cp -f "${NB_FILE}" "${dest}"
+  echo "Also copied ${dest}  ($(wc -c < "${dest}") bytes)"
+  [[ -f "${WORKDIR}/${NAME}_inputmeta.yml" ]] && cp -f "${WORKDIR}/${NAME}_inputmeta.yml" "${ROOT}/export_nb/"
+  [[ -f "${WORKDIR}/${NAME}_postprocess_file.yml" ]] && cp -f "${WORKDIR}/${NAME}_postprocess_file.yml" "${ROOT}/export_nb/"
+  echo "NBG input is IMAGE_RGB (HWC uint8 0-255). Rebuild yolo26_npu after git pull."
+  # Same-size as another stem usually means the wrong wksp .nb was copied.
+  while IFS= read -r other; do
+    [[ "${other}" == "${dest}" ]] && continue
+    if [[ -f "${other}" ]] && cmp -s "${dest}" "${other}"; then
+      echo "ERROR: ${dest} is a byte-for-byte copy of ${other}."
+      echo "That is the old 'find wksp | head' bug. Re-run convert for ${NAME} after git pull."
+      exit 1
+    fi
+  done < <(find "${ROOT}/export_nb" -maxdepth 1 -name "*_${QUANT}.nb" 2>/dev/null)
 fi
 echo
 echo "If conversion succeeded, copy this file to the Orange Pi:"

@@ -43,7 +43,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model", required=True, help="ONNX file or NCNN model directory")
     parser.add_argument("--source", default="0", help="Image, folder, video, or camera index")
     parser.add_argument("--backend", choices=("auto", "npu", "onnx", "ncnn"), default="auto")
-    parser.add_argument("--layout", choices=("chw", "hwc"), default="chw", help="NPU output layout")
+    parser.add_argument("--layout", choices=("auto", "chw", "hwc"), default="chw", help="NPU output layout (VIPLite memory is CHW)")
     parser.add_argument("--nc", type=int, default=80)
     parser.add_argument("--imgsz", type=int, default=640)
     parser.add_argument("--conf", type=float, default=0.25)
@@ -124,7 +124,7 @@ def parse_onnx_output(
     if len(outs) >= 6:
         from npu_runtime import decode_yolo26_6
 
-        return decode_yolo26_6(outs, imgsz, conf, iou, nc=nc, layout="chw", nms_fn=nms)
+        return decode_yolo26_6(outs, imgsz, conf, iou, nc=nc, layout="chw", nms_fn=nms)  # ONNX is NCHW
 
     pred = np.squeeze(outs[0])
     if pred.ndim != 2:

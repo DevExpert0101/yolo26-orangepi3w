@@ -60,35 +60,86 @@ echo "Using ACUITY_PATH=${ACUITY_PATH}"
 echo "VIV_SDK=${VIV_SDK}"
 echo "Import ${NAME}.onnx  imgsz=${IMGSZ}  quant=${QUANT}  target=${OPTIMIZE}"
 
-PREPARE="$(cd "$(dirname "$0")" && pwd)/prepare_onnx_acuity.py"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PREPARE="${SCRIPT_DIR}/prepare_onnx_acuity.py"
 if [[ -f "${PREPARE}" ]]; then
   "${PY}" "${PREPARE}" "${NAME}.onnx" || echo "prepare_onnx_acuity skipped"
 fi
 
-# Do not pass --input-size-list 1,3,H,W. ACUITY prepends batch itself, then
-# conv_shape IndexError. Zoo ONNX import uses CHW without the batch dim.
-if grep -q 'AcuityVersion' "${NAME}.json" 2>/dev/null && [[ -f "${NAME}.data" ]]; then
-  echo "Reusing imported ${NAME}.json"
+# Official zoo pegasus_import.sh always deletes json/data then re-imports.
+# Stale graphs (wrong input size, no preproc node) were the source of garbage NBGs.
+REUSE="${PEGASUS_REUSE:-0}"
+if [[ "${REUSE}" == "1" ]] && grep -q 'AcuityVersion' "${NAME}.json" 2>/dev/null && [[ -f "${NAME}.data" ]]; then
+  echo "PEGASUS_REUSE=1: keeping imported ${NAME}.json"
 else
-  pegasus_run import onnx \
-    --model "${NAME}.onnx" \
-    --output-model "${NAME}.json" \
-    --output-data "${NAME}.data" \
-    --inputs images \
-    --input-size-list "3,${IMGSZ},${IMGSZ}"
+  rm -f "${NAME}.json" "${NAME}.data"
+  rm -f "${NAME}_inputmeta.yml" "${NAME}_postprocess_file.yml"
+  rm -f "${NAME}_pcq.quantize" "${NAME}_uint8.quantize" "${NAME}_int16.quantize"
+  # Zoo import_onnx_network: model/json/data only. Do not pass --input-size-list
+  # 1,3,H,W — ACUITY prepends batch and then conv_shape IndexError.
+  if pegasus_run import onnx \
+      --model "${NAME}.onnx" \
+      --output-model "${NAME}.json" \
+      --output-data "${NAME}.data"; then
+    :
+  else
+    echo "ONNX import without sizes failed; retry 3,${IMGSZ},${IMGSZ}"
+    pegasus_run import onnx \
+      --model "${NAME}.onnx" \
+      --output-model "${NAME}.json" \
+      --output-data "${NAME}.data" \
+      --inputs images \
+      --input-size-list "3,${IMGSZ},${IMGSZ}"
+  fi
 fi
 
-PATCH="$(cd "$(dirname "$0")" && pwd)/patch_inputmeta.py"
+if [[ ! -f "${NAME}.json" || ! -f "${NAME}.data" ]]; then
+  echo "pegasus import onnx failed (${NAME}.json / ${NAME}.data missing)"
+  exit 1
+fi
+
+# Same two generate steps as pegasus_import.sh, then config_yml.py equivalent.
+pegasus_run generate inputmeta \
+  --model "${NAME}.json" \
+  --separated-database \
+  --input-meta-output "${NAME}_inputmeta.yml"
+pegasus_run generate postprocess-file \
+  --model "${NAME}.json" \
+  --postprocess-file-output "${NAME}_postprocess_file.yml"
+
+PATCH="${SCRIPT_DIR}/patch_inputmeta.py"
 if [[ -f "${PATCH}" ]]; then
   "${PY}" "${PATCH}" "${NAME}"
+else
+  echo "missing ${PATCH}"
+  exit 1
 fi
 
-META=""
-[[ -f "${NAME}_inputmeta.yml" ]] && META="--with-input-meta ${NAME}_inputmeta.yml"
+if [[ ! -f "${NAME}_inputmeta.yml" ]]; then
+  echo "missing ${NAME}_inputmeta.yml after generate+patch"
+  exit 1
+fi
+if ! grep -qi 'add_preproc_node: true' "${NAME}_inputmeta.yml"; then
+  echo "ERROR: ${NAME}_inputmeta.yml must have add_preproc_node: true (IMAGE_RGB)."
+  echo "Without it the NBG expects a float tensor, not HWC uint8, and boxes are garbage."
+  exit 1
+fi
+if [[ ! -f "${NAME}_postprocess_file.yml" ]]; then
+  echo "missing ${NAME}_postprocess_file.yml after generate"
+  exit 1
+fi
+if ! grep -qi 'add_postproc_node: true' "${NAME}_postprocess_file.yml"; then
+  echo "ERROR: ${NAME}_postprocess_file.yml must have add_postproc_node: true"
+  exit 1
+fi
+
+META="--with-input-meta ${NAME}_inputmeta.yml"
+POST="--postprocess-file ${NAME}_postprocess_file.yml"
 
 case "${QUANT}" in
   fp16|float16|float) QUANT="fp16" ;;
   pcq|int8) QUANT="pcq" ;;
+  int16) QUANT="int16" ;;
 esac
 
 QUANTIZER="asymmetric_affine"
@@ -98,6 +149,10 @@ OUT_STEM="${NAME}_${QUANT}"
 if [[ "${QUANT}" == "pcq" ]]; then
   QUANTIZER="perchannel_symmetric_affine"
   QTYPE="int8"
+elif [[ "${QUANT}" == "int16" ]]; then
+  # Frigate A733 notes: int16 stays near float; uint8/pcq drops scores too far.
+  QUANTIZER="dynamic_fixed_point"
+  QTYPE="int16"
 elif [[ "${QUANT}" == "fp16" ]]; then
   # VIP9000 has no FP32 MACs. ACUITY --dtype float packs an FP16 NBG (zoo: wksp/NAME_fp16).
   DTYPE="float"
@@ -108,9 +163,9 @@ ITERS="${BITS:-12}"
 
 if [[ "${QUANT}" == "fp16" ]]; then
   echo "Skipping pegasus quantize (FP16 / --dtype float). No INT8 calibration."
-elif [[ -f "${NAME}_${QUANT}.quantize" ]]; then
-  echo "Reusing ${NAME}_${QUANT}.quantize"
 else
+  # Do not reuse an old .quantize: it was built against the previous inputmeta.
+  rm -f "${NAME}_${QUANT}.quantize"
   # shellcheck disable=SC2086
   pegasus_run quantize \
     --model "${NAME}.json" \
@@ -122,7 +177,12 @@ else
     --rebuild \
     --model-quantize "${NAME}_${QUANT}.quantize" \
     ${META}
+  if [[ ! -f "${NAME}_${QUANT}.quantize" ]]; then
+    echo "pegasus quantize failed"
+    exit 1
+  fi
 fi
+
 
 mkdir -p wksp
 if ! command -v gcc >/dev/null 2>&1; then
@@ -133,9 +193,9 @@ if ! command -v gcc >/dev/null 2>&1; then
   exit 1
 fi
 export EXTRALFLAGS="${EXTRALFLAGS:-} -lNNArchPerf -lArchModelSw -ldl -lpthread -lrt"
-POST=""
-[[ -f "${NAME}_postprocess_file.yml" ]] && POST="--postprocess-file ${NAME}_postprocess_file.yml"
+rm -rf "wksp/${OUT_STEM}" "wksp/${OUT_STEM}_nbg_unify"
 # shellcheck disable=SC2086
+# Zoo pegasus_export_ovx_nbg.sh always passes --with-input-meta and --postprocess-file.
 if [[ "${DTYPE}" == "float" ]]; then
   pegasus_run export ovxlib \
     --model "${NAME}.json" \
@@ -161,15 +221,39 @@ else
     ${META} ${POST}
 fi
 
-# --pack-nbg-unify always writes network_binary.nb. Zoo renames it to NAME_pcq_a733.nb.
+
+# --pack-nbg-unify writes wksp/OUT_STEM_nbg_unify/network_binary.nb.
+# Never `find wksp` globally: a leftover yolo26n .nb would be copied as yolo26x.
 NB_OUT="${NAME}_${QUANT}_a733.nb"
-nb_src="$(find wksp -name network_binary.nb 2>/dev/null | head -1 || true)"
-[[ -z "${nb_src}" ]] && nb_src="$(find wksp -name '*.nb' 2>/dev/null | head -1 || true)"
-if [[ -n "${nb_src}" ]]; then
-  cp -f "${nb_src}" "${NB_OUT}"
-  echo "NBG: ${nb_src} -> ${NB_OUT}"
-else
-  echo "No network_binary.nb under wksp/. NBG pack did not finish."
+nb_src=""
+for cand in \
+  "wksp/${OUT_STEM}_nbg_unify/network_binary.nb" \
+  "wksp/${OUT_STEM}/network_binary.nb"
+do
+  if [[ -f "${cand}" ]]; then
+    nb_src="${cand}"
+    break
+  fi
+done
+if [[ -z "${nb_src}" ]]; then
+  for dir in "wksp/${OUT_STEM}_nbg_unify" "wksp/${OUT_STEM}"; do
+    if [[ -d "${dir}" ]]; then
+      nb_src="$(find "${dir}" -name '*.nb' 2>/dev/null | head -1 || true)"
+      [[ -n "${nb_src}" ]] && break
+    fi
+  done
+fi
+if [[ -z "${nb_src}" || ! -f "${nb_src}" ]]; then
+  echo "No .nb under wksp/${OUT_STEM}*_nbg_unify/. NBG pack did not finish for ${NAME}."
+  echo "Other models in wksp/ are ignored on purpose."
   exit 1
 fi
+cp -f "${nb_src}" "${NB_OUT}"
+echo "NBG: ${nb_src} -> ${NB_OUT}  ($(wc -c < "${NB_OUT}") bytes)"
+if [[ -f "wksp/${OUT_STEM}_nbg_unify/nbg_meta.json" ]]; then
+  cp -f "wksp/${OUT_STEM}_nbg_unify/nbg_meta.json" "${NAME}_${QUANT}_nbg_meta.json"
+  echo "meta: ${NAME}_${QUANT}_nbg_meta.json"
+fi
+echo "inputmeta add_preproc_node:"
+grep -E 'add_preproc_node|preproc_type|scale:' "${NAME}_inputmeta.yml" | head -20
 ls -l "${NB_OUT}"

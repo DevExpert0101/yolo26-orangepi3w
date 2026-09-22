@@ -181,25 +181,12 @@ def download_calib(calib_dir: Path, count: int) -> list[str]:
 
 
 def write_acuity_sidecars(outdir: Path, stem: str, imgsz: int, nc: int, strides: list[int], calib: list[str]) -> None:
-    (outdir / f"{stem}_inputmeta.yml").write_text(
-        "\n".join(
-            [
-                f"# ACUITY input meta for {stem}",
-                "# uint8 0-255 RGB, NCHW. Matches VIPLite data_format=2 on A733.",
-                "inputs:",
-                "  - name: images",
-                f"    shape: [1, 3, {imgsz}, {imgsz}]",
-                "    mean: [0.0, 0.0, 0.0]",
-                "    scale: [255.0, 255.0, 255.0]",
-                "    reverse_channel: false",
-                "",
-            ]
-        ),
-        encoding="utf-8",
-    )
+    # Do not write NAME.json or NAME_inputmeta.yml. Those are ACUITY files:
+    # pegasus import overwrites .json; generate+patch_inputmeta.py writes the yml
+    # (IMAGE_RGB, scale 1/255). A stub with scale 255 used to poison convert.
     dataset = outdir / "dataset.txt"
     dataset.write_text("\n".join(calib) + ("\n" if calib else ""), encoding="utf-8")
-    (outdir / f"{stem}.json").write_text(
+    (outdir / f"{stem}_npu.json").write_text(
         json.dumps(
             {
                 "model": stem,
@@ -211,6 +198,7 @@ def write_acuity_sidecars(outdir: Path, stem: str, imgsz: int, nc: int, strides:
                 "optimize": "VIP9000NANODI_PLUS_PID0X1000003B",
                 "platform": "a733",
                 "quant": "fp16",
+                "preproc": "IMAGE_RGB",
             },
             indent=2,
         )

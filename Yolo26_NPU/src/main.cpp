@@ -18,6 +18,7 @@ static void usage(const char *exe) {
                  "  --nc      N     classes (default 80)\n"
                  "  --loop    N     timed image repeats after warmup (default 1)\n"
                  "  --warmup  N     discarded runs before timing (default 3 if --loop>1)\n"
+                 "  --layout  MODE  chw|hwc (default chw; VIPLite reports HWC but memory is CHW)\n"
                  "  --no-show       do not open a window\n"
                  "  --save    PATH  write annotated image/video\n",
                  exe);
@@ -39,6 +40,7 @@ int main(int argc, char **argv) {
     float nms = YOLO26_NMS_THRESH;
     bool show = true;
     std::string save_path = "result.jpg";
+    std::string layout = "chw";
 
     for (int i = 3; i < argc; ++i) {
         auto eat = [&](const char *key, auto &dst) {
@@ -56,6 +58,8 @@ int main(int argc, char **argv) {
             show = false;
         } else if (std::strcmp(argv[i], "--save") == 0 && i + 1 < argc) {
             save_path = argv[++i];
+        } else if (std::strcmp(argv[i], "--layout") == 0 && i + 1 < argc) {
+            layout = argv[++i];
         }
     }
 
@@ -138,7 +142,7 @@ int main(int argc, char **argv) {
                 return 4;
             }
             const auto t2 = clock::now();
-            decode_yolo26_6(engine, lb, frame.size(), conf, nms, nc, dets);
+            decode_yolo26_6(engine, lb, frame.size(), conf, nms, nc, dets, layout.c_str());
             const auto t3 = clock::now();
 
             const double pre = ms_since(t0, t1);

@@ -102,16 +102,37 @@ static bool match_head(size_t elems, int hw, int nc, bool &is_box) {
     return false;
 }
 
-void decode_yolo26_6(const VipEngine &engine, const LetterboxInfo &lb, const cv::Size &orig,
-                     float conf, float nms_thr, int nc, std::vector<Detection> &dets) {
+static float at_chw(const float *t, int c, int cell, int hw) { return t[c * hw + cell]; }
+static float at_hwc(const float *t, int c, int cell, int ch) { return t[cell * ch + c]; }
+
+static void range_of(const float *p, size_t n, float &mn, float &mx) {
+    mn = 1e9f;
+    mx = -1e9f;
+    for (size_t i = 0; i < n; ++i) {
+        mn = std::min(mn, p[i]);
+        mx = std::max(mx, p[i]);
+    }
+}
+
+// ACUITY often leaves cls as logits; some NBGs already apply sigmoid (0..1).
+// Sigmoid again maps every background cell to ~0.5 and draws thousands of boxes.
+static float to_score(float v, bool already_prob) {
+    if (already_prob) {
+        return v;
+    }
+    if (v > 16.f) {
+        return 1.f;
+    }
+    if (v < -16.f) {
+        return 0.f;
+    }
+    return 1.f / (1.f + std::exp(-v));
+}
+
+static void decode_layout(const VipEngine &engine, const LetterboxInfo &lb, const cv::Size &orig,
+                          float conf, int nc, bool hwc, std::vector<Detection> &dets, bool log) {
     dets.clear();
     const int strides[3] = {8, 16, 32};
-    const auto &outs = engine.outputs();
-    if (outs.size() < 6) {
-        std::fprintf(stderr, "expected 6 YOLO26 heads, got %zu\n", outs.size());
-        return;
-    }
-
     for (int s = 0; s < 3; ++s) {
         const int stride = strides[s];
         const int h = lb.imgsz / stride;
@@ -119,7 +140,8 @@ void decode_yolo26_6(const VipEngine &engine, const LetterboxInfo &lb, const cv:
         const int hw = h * w;
         const float *box = nullptr;
         const float *cls = nullptr;
-        for (size_t i = 0; i < outs.size(); ++i) {
+        size_t cls_n = 0;
+        for (size_t i = 0; i < engine.outputs().size(); ++i) {
             bool is_box = false;
             if (!match_head(engine.output_elements(static_cast<int>(i)), hw, nc, is_box)) {
                 continue;
@@ -128,40 +150,54 @@ void decode_yolo26_6(const VipEngine &engine, const LetterboxInfo &lb, const cv:
                 box = engine.output_f32(static_cast<int>(i));
             } else if (!is_box && !cls) {
                 cls = engine.output_f32(static_cast<int>(i));
+                cls_n = engine.output_elements(static_cast<int>(i));
             }
         }
         if (!box || !cls) {
-            std::fprintf(stderr, "missing head for stride %d\n", stride);
+            if (log) {
+                std::fprintf(stderr, "missing head for stride %d\n", stride);
+            }
             continue;
         }
-
-        // A733 VIPLite writes CHW even when query reports HWC.
+        float mn = 0, mx = 0;
+        range_of(cls, cls_n, mn, mx);
+        const bool already_prob = (mn >= -0.02f && mx <= 1.02f);
+        if (log) {
+            std::printf("stride %d cls %s range [%.3f, %.3f] %s\n", stride, hwc ? "HWC" : "CHW", mn, mx,
+                        already_prob ? "already-prob (no sigmoid)" : "logits (sigmoid)");
+            if (!already_prob && mx < 0.05f) {
+                std::fprintf(stderr,
+                             "stride %d class logits are all <= 0 (INT8 collapse). Every cell "
+                             "becomes score~0.5 if sigmoided. Use an FP16 .nb.\n",
+                             stride);
+            }
+        }
         for (int y = 0; y < h; ++y) {
             for (int x = 0; x < w; ++x) {
                 const int cell = y * w + x;
                 int best_c = 0;
                 float best = -1e9f;
                 for (int c = 0; c < nc; ++c) {
-                    const float logit = cls[c * hw + cell];
-                    if (logit > best) {
-                        best = logit;
+                    const float v = hwc ? at_hwc(cls, c, cell, nc) : at_chw(cls, c, cell, hw);
+                    if (v > best) {
+                        best = v;
                         best_c = c;
                     }
                 }
-                const float score = 1.f / (1.f + std::exp(-best));
+                const float score = to_score(best, already_prob);
                 if (score < conf) {
                     continue;
                 }
-                const float l = box[0 * hw + cell];
-                const float t = box[1 * hw + cell];
-                const float r = box[2 * hw + cell];
-                const float b = box[3 * hw + cell];
-                const float ax = (x + 0.5f);
-                const float ay = (y + 0.5f);
-                float x1 = (ax - l) * stride;
-                float y1 = (ay - t) * stride;
-                float x2 = (ax + r) * stride;
-                float y2 = (ay + b) * stride;
+                const float l = hwc ? at_hwc(box, 0, cell, 4) : at_chw(box, 0, cell, hw);
+                const float t = hwc ? at_hwc(box, 1, cell, 4) : at_chw(box, 1, cell, hw);
+                const float r = hwc ? at_hwc(box, 2, cell, 4) : at_chw(box, 2, cell, hw);
+                const float b = hwc ? at_hwc(box, 3, cell, 4) : at_chw(box, 3, cell, hw);
+                const float ax = static_cast<float>(x) + 0.5f;
+                const float ay = static_cast<float>(y) + 0.5f;
+                float x1 = (ax - l) * static_cast<float>(stride);
+                float y1 = (ay - t) * static_cast<float>(stride);
+                float x2 = (ax + r) * static_cast<float>(stride);
+                float y2 = (ay + b) * static_cast<float>(stride);
                 x1 = (x1 - lb.pad_x) / lb.ratio;
                 y1 = (y1 - lb.pad_y) / lb.ratio;
                 x2 = (x2 - lb.pad_x) / lb.ratio;
@@ -177,7 +213,31 @@ void decode_yolo26_6(const VipEngine &engine, const LetterboxInfo &lb, const cv:
             }
         }
     }
+}
+
+void decode_yolo26_6(const VipEngine &engine, const LetterboxInfo &lb, const cv::Size &orig,
+                     float conf, float nms_thr, int nc, std::vector<Detection> &dets, const char *layout) {
+    dets.clear();
+    if (engine.outputs().size() < 6) {
+        std::fprintf(stderr, "expected 6 YOLO26 heads, got %zu\n", engine.outputs().size());
+        return;
+    }
+    // VIPLite reports [H,W,C,1] but writes CHW. Confirmed on A733/VIP9000:
+    // https://github.com/blakeblackshear/frigate/discussions/23418
+    const bool hwc = layout && (std::strcmp(layout, "hwc") == 0);
+    if (hwc) {
+        std::printf("decode layout=HWC (override). Default is CHW (VIPLite memory order).\n");
+    } else {
+        std::printf("decode layout=CHW (ignore vip_query_output HWC sizes)\n");
+    }
+    decode_layout(engine, lb, orig, conf, nc, hwc, dets, true);
     nms(dets, nms_thr);
+    if (dets.size() > 200) {
+        std::fprintf(stderr,
+                     "%zu boxes after NMS. Class scores are not object probabilities (double "
+                     "sigmoid, INT8 collapse, or wrong input pack). Prefer an FP16 .nb.\n",
+                     dets.size());
+    }
 }
 
 void draw_detections(cv::Mat &image, const std::vector<Detection> &dets) {
